@@ -1,14 +1,20 @@
 package entities;
 
 public class Kunde extends User {
-    private int hausnummer;
     private String strasse;
     private String wohnort;
     private int postleitzahl;
 
     //Konstruktor
-    public Kunde(int userNr, String firstName, String lastName) {
+    public Kunde(int userNr, String firstName, String lastName, String strasse, String wohnort, int postleitzahl) {
         super(firstName, lastName, userNr);
+        this.strasse = strasse;
+        this.wohnort = wohnort;
+        this.postleitzahl = postleitzahl;
+    }
+
+    public void registrieren() {
+
     }
 
 
