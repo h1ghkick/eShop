@@ -23,11 +23,6 @@ public class Warenkorb {
     public void erhoeheAnzahl(int menge) {
         this.anzahl += menge;
     }
-
-    public List<Artikel> getArtikelListe() {
-        return new ArrayList<>(artikelListe);
-    }
-
 }
 
 
@@ -41,20 +36,24 @@ public class Warenkorb {
 //        return counter;
 //    }
 
-    public void mehrfachArtikel(Artikel artikel,int anzahl) {
-    for(int i =0; i<anzahl;i++)
-    if (artikelListe.contains(artikel)){
-        anzahl++;
-    } else{
+//    public void mehrfachArtikel(Artikel artikel, int anzahl) {
+//        for (int i = 0; i < anzahl; i++) {
+//            if (artikelListe[i].contains(artikel)) {
+//                anzahl++;
+//            } else {
+//
+//            }
+//
+//        }
+//    }
+//}
 
-    }
-
-    //Todo: Stückzahl verringern methode
-    public void stueckzahl(Artikel artikel, int anzahl){
-
-
-
-    }
+////    //Todo: Stückzahl verringern methode
+////    public void stueckzahl(Artikel artikel, int anzahl){
+////
+//
+//
+//    }
 
     //Todo: komplette Stückzahl leeren methode
 
@@ -63,4 +62,4 @@ public class Warenkorb {
     //Todo: rechnung mit datum Preisen und Kundeninfo methode
 
 
-}
+
