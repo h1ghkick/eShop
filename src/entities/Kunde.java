@@ -19,8 +19,6 @@ public class Kunde extends User {
 
 
 
-    public void setHausnummer(int hausnummer) { this.hausnummer = hausnummer;}
-
     public void setStrasse(String strasse) { this.strasse = strasse; }
 
     public void setWohnort(String wohnort) { this.wohnort = wohnort; }
@@ -29,7 +27,7 @@ public class Kunde extends User {
 
     public String getAdresse() {
 
-        return hausnummer + " " + strasse + " " + wohnort + " " + postleitzahl;
+        return strasse + " " + wohnort + " " + postleitzahl;
 
     }
 
