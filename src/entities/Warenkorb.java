@@ -24,52 +24,43 @@ public class Warenkorb {
         this.anzahl += menge;
     }
 
-    public void zeigeWarenkorb() {
-        for (Artikel artikel : artikelListe) {
-            System.out.println(artikel);
-        }
+    public List<Artikel> getArtikelListe() {
+        return new ArrayList<>(artikelListe);
     }
 
-    public int artikelAnzahl(Artikel artikel) {
-        int counter = 0;
-        for (Artikel a : artikelListe) {
-            if (a.equals(artikel)) {
-                counter++;
-            }
-        }
-        return counter;
-    }
-
-    // Artikel mehrfach hinzufüge
-    public void mehrfachArtikel(Artikel artikel ){
-        if (artikelListe.contains(artikel)) {
-            for (Artikel a : artikelListe) {
-                if (a.equals(artikel)) {
-                    artikel.erhoeheAnzahl();
-                    return;
-                }
-            }
-        } else {
-            er
-            artikelListe.add(artikel);
-        }
-    }
+}
 
 
-    //Stückzahl wenigermachen
-    public void stueckzahl(){
+//    public int artikelAnzahl(Artikel artikel) {
+//        int counter = 0;
+//        for (Artikel a : artikelListe) {
+//            if (a.equals(artikel)) {
+//                counter++;
+//            }
+//        }
+//        return counter;
+//    }
+
+    public void mehrfachArtikel(Artikel artikel,int anzahl) {
+    for(int i =0; i<anzahl;i++)
+    if (artikelListe.contains(artikel)){
+        anzahl++;
+    } else{
 
     }
 
-    //komplette Stückzahl leeren
---    public void stueckzahlLeeren(Artikel artikel){
-        if (artikelListe)
+    //Todo: Stückzahl verringern methode
+    public void stueckzahl(Artikel artikel, int anzahl){
+
+
+
     }
 
-    //kaufen
+    //Todo: komplette Stückzahl leeren methode
 
-    //rechnung mit datum Preisen und Kundeninfo
+    //Todo: kaufen methode
 
-    //
+    //Todo: rechnung mit datum Preisen und Kundeninfo methode
+
 
 }
