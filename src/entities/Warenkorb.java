@@ -6,7 +6,6 @@ import java.util.List;
 public class Warenkorb {
     private int anzahl;
 
-
     private List<Artikel> artikelListe;
 
     public Warenkorb() {
