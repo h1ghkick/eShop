@@ -1,4 +1,5 @@
 package entities;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,11 @@ public class Warenkorb {
     public void erhoeheAnzahl(int menge) {
         this.anzahl += menge;
     }
-}
+
+    public List<Artikel> listeAusgeben(){
+        return artikelListe;
+    }
+
 
 
 //    public int artikelAnzahl(Artikel artikel) {
@@ -36,30 +41,27 @@ public class Warenkorb {
 //        return counter;
 //    }
 
-//    public void mehrfachArtikel(Artikel artikel, int anzahl) {
-//        for (int i = 0; i < anzahl; i++) {
-//            if (artikelListe[i].contains(artikel)) {
-//                anzahl++;
-//            } else {
-//
-//            }
-//
-//        }
-//    }
-//}
+    public void mehrfachArtikel(Artikel artikel, int anzahl) {
+        for (int i = 0; i < anzahl; i++) {
+            if (artikelListe.contains(artikel)){
+                anzahl++;
+            } else {
+                System.out.println("Funktioniert nicht");
 
-////    //Todo: Stückzahl verringern methode
-////    public void stueckzahl(Artikel artikel, int anzahl){
-////
-//
-//
-//    }
+            }
 
-    //Todo: komplette Stückzahl leeren methode
+        }
+    }
+}
 
-    //Todo: kaufen methode
+//Todo: Stückzahl verringern methode
 
-    //Todo: rechnung mit datum Preisen und Kundeninfo methode
+
+//Todo: komplette Stückzahl leeren methode
+
+//Todo: kaufen methode
+
+//Todo: rechnung mit datum Preisen und Kundeninfo methode
 
 
 
