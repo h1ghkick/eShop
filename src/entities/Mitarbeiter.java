@@ -1,0 +1,19 @@
+package entities;
+
+public class Mitarbeiter extends User {
+
+    public Mitarbeiter( String firstName, String lastName, String email, String password) {
+        super(firstName, lastName, email, password);
+    }
+
+    /**
+     * @param firstName
+     * @param lastName
+     * @param email
+     *
+     * Methode, sodass Mitarbeiter auch andere Mitarbeiter hinzufügen kann.
+     */
+    public Mitarbeiter mitarbeiterAufnehmen(String firstName, String lastName, String email, String password) {
+        return new Mitarbeiter(firstName, lastName, email, password);
+    }
+}
