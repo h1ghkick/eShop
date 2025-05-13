@@ -13,6 +13,7 @@ public class Mitarbeiter extends User {
      *
      * Methode, sodass Mitarbeiter auch andere Mitarbeiter hinzufügen kann.
      */
+
     public Mitarbeiter mitarbeiterAufnehmen(String firstName, String lastName, String email, String password) {
         return new Mitarbeiter(firstName, lastName, email, password);
     }
