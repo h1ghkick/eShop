@@ -13,6 +13,7 @@ public class MitarbeiterVW {
         mitarbeiterListe.add(arbeiter);
     }
 
+
     public boolean istRegistriert(String email) {
         for (Mitarbeiter m : mitarbeiterListe) {
             if (m.getMail().equalsIgnoreCase(email)) {
