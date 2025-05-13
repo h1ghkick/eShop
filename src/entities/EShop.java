@@ -7,35 +7,53 @@ import entities.Kunde;
 import entities.User;
 
 /**
- * Der E-Shop verhält sich genauso wie die Bibliothek !!!Nachgucken!!!
+ * Der E-Shop verhält sich genauso wie die Bibliothek!!!Nachgucken!!!
  */
 public class EShop {
-    private KundenVW kunden;
-    private MitarbeiterVW mitarbeiter;
-    private ArtikelVW artikel;
-    private String datei = "";
+    private KundenVW kundenVW;
+    private MitarbeiterVW mitarbeiterVW;
+    private ArtikelVW artikelVW;
 
     public EShop(String datei)  {
-        kunden = new KundenVW();
-        mitarbeiter = new MitarbeiterVW();
-        artikel = new ArtikelVW();
+        this.kundenVW = new KundenVW();
+        this.mitarbeiterVW = new MitarbeiterVW();
+        this.artikelVW = new ArtikelVW();
 
     }
 
-    /**
-     *
-     * @param user User der in VW aufgenommen werden soll
-     * Prüfung ob Mitarbeiter oder Kunde
-     *
-     */
-    public void registrieren(User user){
-        if(user instanceof Mitarbeiter){
-            Mitarbeiter arbeiter = (Mitarbeiter) user;
-            mitarbeiter.einfuegenMitarbeiter(arbeiter);
+    public User einloggen(String email, String password) throws LoginException {
+        for (Kunde k : kundenVW.getAlleKunden() ) {
+            if(k.getMail().equalsIgnoreCase(email) && k.getPassword().equalsIgnoreCase(password)) {
+                return k;
+            } else {
+                throw new LoginException(k, "Falsches Passwort.");
+            }
         }
-        else if (user instanceof Kunde){
-            Kunde kunde = (Kunde) user;
-            kunden.einfuegenKunden(kunde);
+
+        for (Mitarbeiter m : mitarbeiterVW.getAlleMitarbeiter()) {
+            if(m.getMail().equalsIgnoreCase(email) && m.getPassword().equalsIgnoreCase(password)) {
+                return m;
+            } else {
+                throw new LoginException(m, "Falsches Passwort.");
+            }
         }
+        throw new LoginException(null, "E-Mail nicht gefunden.");
+    }
+
+    public boolean registrieren(User user){
+        if (user instanceof Kunde) {
+            for (Kunde k : kundenVW.getAlleKunden()) {
+                if (k.getMail().equalsIgnoreCase(user.getMail())) {
+                    return false;
+                }
+            }
+        }
+        kundenVW.einfuegenKunden((Kunde) user);
+        return true;
+    }
+
+    public void Kaufen(){
+
+
     }
 }

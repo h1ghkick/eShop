@@ -10,15 +10,14 @@ public class Kunde extends User {
      * @param firstName
      * @param lastName
      * @param email
-     * @param status
      * @param strasse
      * @param wohnort
      * @param postleitzahl
      *
      * Konstruktor für Kunde
      */
-    public Kunde(String firstName, String lastName, String email, boolean status, String strasse, String wohnort, int postleitzahl) {
-        super(firstName, lastName, email, status);
+    public Kunde(String firstName, String lastName, String email, String password, String strasse, String wohnort, int postleitzahl) {
+        super(firstName, lastName, email, password);
         this.strasse = strasse;
         this.wohnort = wohnort;
         this.postleitzahl = postleitzahl;

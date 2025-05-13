@@ -1,29 +1,28 @@
 package domain;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
-import entities.Mitarbeiter;
 import entities.User;
 
+import entities.Mitarbeiter;
 
 public class MitarbeiterVW {
-    private ArrayList mitarbeiter = new ArrayList();
-    private ArrayList email = new ArrayList();
-    private ArrayList password = new ArrayList();
+    private List<Mitarbeiter> mitarbeiterListe = new ArrayList<>();
 
     public void einfuegenMitarbeiter(Mitarbeiter arbeiter) {
-        mitarbeiter.add(arbeiter);
+        mitarbeiterListe.add(arbeiter);
     }
 
-
-    public void istRegistriert(String mail){
-        if(email.contains(mail)){
-            return;
+    public boolean istRegistriert(String email) {
+        for (Mitarbeiter m : mitarbeiterListe) {
+            if (m.getMail().equalsIgnoreCase(email)) {
+                return true;
+            }
         }
+        return false;
     }
 
-
+    public List<Mitarbeiter> getAlleMitarbeiter() {
+        return new ArrayList<>(mitarbeiterListe);
+    }
 }
-

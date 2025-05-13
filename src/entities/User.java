@@ -1,22 +1,22 @@
 package entities;
 
 public class User {
-    private String mail;
+    private String email;
     private String firstName;
     private String lastName;
-    private boolean status = false;
+    private String password;
 
 
-    public User(String fName, String lName, String email, boolean status) {
-        this.mail = email;
+    public User(String fName, String lName, String email, String password) {
+        this.email = email;
         this.firstName = fName;
         this.lastName = lName;
-        this.status = status;
+        this.password = password;
     }
 
-
-    public String getMail(){ return mail; }
-    public boolean getStatus(){ return status;}
+    public void setMail(String email) { this.email= email; }
+    public String getMail(){ return email; }
+    public String getPassword() { return password; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
     public void setfirstName(String firstName) { this.firstName = firstName; }

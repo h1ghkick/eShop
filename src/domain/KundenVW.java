@@ -1,30 +1,28 @@
 package domain;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
 import entities.Kunde;
 import entities.User;
 
-
 public class KundenVW {
-    private ArrayList kunden = new ArrayList();
-    private ArrayList email = new ArrayList();
-    private ArrayList password = new ArrayList();
+    private List<Kunde> kundenListe = new ArrayList<>();
 
     public void einfuegenKunden(Kunde kunde) {
-        kunden.add(kunde);
+        kundenListe.add(kunde);
     }
 
-    public void istRegistriert(String mail) {
-        if(email.contains(mail)){
-            return;
+    public boolean istRegistriert(String email) {
+        for (Kunde k : kundenListe) {
+            if (k.getMail().equalsIgnoreCase(email)) {
+                return true;
+            }
         }
+        return false;
     }
 
-
-
+    public List<Kunde> getAlleKunden() {
+        return new ArrayList<>(kundenListe);
+    }
 }
-
 
