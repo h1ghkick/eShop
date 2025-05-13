@@ -64,10 +64,10 @@ public class Warenkorb {
         return "";
     }
     }
-}
 
 
-//Todo: rechnung mit datum Preisen und Kundeninfo methode
+
+
 
 
 

@@ -8,10 +8,17 @@ import entities.Warenkorb;
 import entities.EShop;
 
 public class  ShopClientCUI {
+  private EShop eshop;
+
+
 
   public ShopClientCUI() {
 
   }
-  public static void main(String[] args) {
+  private void gibMenueAus(){
+  }
+
+  private void verarbeiteEingabe(){
+
   }
 }

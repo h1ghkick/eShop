@@ -5,6 +5,13 @@ import domain.MitarbeiterVW;
 import domain.ArtikelVW;
 import entities.Kunde;
 import entities.User;
+import java.util.HashMap;
+import java.util.Map;
+import entities.Warenkorb;
+import entities.Rechnung;
+import entities.Artikel;
+import exception.LoginException;
+
 
 /**
  * Der E-Shop verhält sich genauso wie die Bibliothek!!!Nachgucken!!!
