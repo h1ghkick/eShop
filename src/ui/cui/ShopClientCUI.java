@@ -46,17 +46,34 @@ public class  ShopClientCUI {
     return reader.readLine();
 
   }
+  private void gibMitarbeiterMenue () {
+    System.out.println("Willkommen im Mitarbeitermenü");
+    System.out.println("Artikel hinzufügen : 'a'");
+    System.out.println("Bestand verändern : 'b'");
+    System.out.println("Miarbeiter reegistrieren: 'c'");
+  }
+
+  private void gibKundenMenue () {
+    System.out.println("Willkommen im Kundenmenü");
+    System.out.println("Alle Artikel anschauen: 'a'");
+    System.out.println("Artikel")
+  }
   private void verarbeiteEingabeLogin(String line){
 
 
   }
-
+//Todo: Verstehen wie diese Methode funktioniert Yunus und Naufal
   private void run() {
     String email = "";
     String password = "";
     String input = "";
 
-
+/**
+ * Zuerst wird ein loginFenster geschmissen, dann ein Email Fenster.
+ * Danach die Email gelesen und gespeichert.
+ * Danach das PasswordFenster geworfen und die Eingabe gespeichert.
+ * Das ganze in die eshop.einloggen Methode eingefügt um zu entscheiden ob M oder K.
+ */
     do {
       loginFenster();
       emailFenster();
@@ -83,7 +100,8 @@ public class  ShopClientCUI {
       }
     }  while (!input.equals("q"));
   }
-
+// Todo: verarbeiteEingabeMitarbeiter()
+// Todo: verarbeiteEingabeKunde()
   public static void main(String[] args) {
     ShopClientCUI cui;
     Mitarbeiter w = new Mitarbeiter("Hans","Franz", "franz.hans@gmail.com", "123abc");
