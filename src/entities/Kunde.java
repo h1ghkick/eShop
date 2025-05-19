@@ -21,7 +21,6 @@ public class Kunde extends User {
         this.strasse = strasse;
         this.wohnort = wohnort;
         this.postleitzahl = postleitzahl;
-
     }
 
 
@@ -38,9 +37,7 @@ public class Kunde extends User {
     public void setPostleitzahl(int postleitzahl) { this.postleitzahl = postleitzahl; }
 
     public String getAdresse() {
-
         return strasse + " " + wohnort + " " + postleitzahl;
-
     }
 
 
