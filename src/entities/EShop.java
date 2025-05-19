@@ -25,7 +25,8 @@ public class EShop {
     private ArtikelVW artikelVW;
 
 
-    public EShop(String datei)  {
+
+    public EShop()  {
         this.kundenVW = new KundenVW();
         this.mitarbeiterVW = new MitarbeiterVW();
         this.artikelVW = new ArtikelVW();
