@@ -3,16 +3,10 @@ package entities;
 import domain.KundenVW;
 import domain.MitarbeiterVW;
 import domain.ArtikelVW;
-import entities.Kunde;
-import entities.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import entities.Warenkorb;
-import entities.Rechnung;
-import entities.Artikel;
+
 import exception.LoginException;
 
 
@@ -53,22 +47,14 @@ public class EShop {
         throw new LoginException(null, "E-Mail nicht gefunden.");
     }
 
-    public boolean registrieren(User user){
-        if (user instanceof Kunde) {
-            for (Kunde k : kundenVW.getAlleKunden()) {
-                if (k.getMail().equalsIgnoreCase(user.getMail())) {
-                    return false;
-                }
-            }
-        }
-        kundenVW.einfuegenKunden((Kunde) user);
-        return true;
+    public boolean istRegistriert(String email){
+       return kundenVW.istRegistriert(email);
     }
 
     public void Kaufen(Warenkorb warenkorb,String email){
         Map<Artikel, Integer> liste = warenkorb.listeAusgeben();
         for(Artikel key : liste.keySet()){
-           int menge = liste.get(key);
+            int menge = liste.get(key);
             artikelVW.artikelAuslagern(key,menge,email);
         }
         List<Kunde> kundenListe = kundenVW.getAlleKunden();
@@ -81,4 +67,23 @@ public class EShop {
         }
         warenkorb.warenkorbLeeren();
     }
+    public boolean artikelAuslagern(Artikel key, int menge, String email){
+        return artikelVW.artikelAuslagern(key,menge,email);
+    }
+    public Artikel artikelDa(String artikelBezeichnung) {
+
+        return artikelVW.artikelDa(artikelBezeichnung);
+    }
+    public void einfuegenMitarbeiter(Mitarbeiter mitarbeiter) {
+        mitarbeiterVW.einfuegenMitarbeiter(mitarbeiter);
+    }
+    public void einfuegenKunden(Kunde kunde) {
+        kundenVW.einfuegenKunden(kunde);
+    }
+    public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail) {
+        artikelVW.artikelEinfuegen(artikel, menge, benutzerEmail);
+    }
+
 }
+
+

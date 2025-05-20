@@ -45,7 +45,14 @@ public class ArtikelVW {
         Ereignis e = new Ereignis(LocalDate.now().getDayOfYear(), artikel, menge, aktion, benutzerEmail);
         ereignisse.add(e);
     }
-
+    public Artikel artikelDa(String artikelBezeichnung) {
+        for (Artikel a : artikelBestand) {
+            if (a.equals(artikelBezeichnung)) {
+                return a;
+            }
+        }
+        return null;
+    }
     public List<Artikel> getAlleArtikel() {
         return artikelBestand;
     }
