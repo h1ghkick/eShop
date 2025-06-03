@@ -17,6 +17,7 @@ public class Warenkorb {
     }
 
     //Artikel mit einer bestimmten Stückzahl in den Warenkorb einfügen
+
     public void artikelHinzufuegen(Artikel artikel, int menge) {
         //entweder die aktuelle menge nehmen oder er nimmt defaultValue = 0;
         int aktuelleMenge = artikelListe.getOrDefault(artikel, 0);
@@ -59,7 +60,7 @@ public class Warenkorb {
         if (artikelListe.containsKey(artikel)) {
             artikelListe.remove(artikel); // entfernt den Artikel aus der Map
         } else {
-            return "Artikel ist nicht im Warenkorb.";
+            return "Artikel ist nicht mehr im Warenkorb.";
         }
         return "";
     }

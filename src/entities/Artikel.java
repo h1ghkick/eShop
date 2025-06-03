@@ -23,7 +23,7 @@ public class Artikel {
 
     @Override
     public String toString(){
-        String verfuegbarkeit = artikelVerfuegbar ? "verfügbar" : "ausgeliehen";
+        String verfuegbarkeit = artikelVerfuegbar ? "verfügbar" : "nicht verfügbar";
         return ("NR: " + artikelNummer + " || Titel: " + artikelBezeichnung + " || Anzahl: " + artikelAnzahl + " || Preis: " + preis + "€ || " + verfuegbarkeit);
     }
 
@@ -51,6 +51,9 @@ public class Artikel {
     public String getArtikelBezeichnung(){return artikelBezeichnung;}
     public boolean getArtikelVerfuegbar(){
         return artikelVerfuegbar;
+    }
+    public void setArtikelVerfuegbar(boolean artikelVerfuegbar){
+        this.artikelVerfuegbar = artikelVerfuegbar;
     }
     public void setArtikelAnzahl(int artikelAnzahl){
         this.artikelAnzahl = artikelAnzahl;
