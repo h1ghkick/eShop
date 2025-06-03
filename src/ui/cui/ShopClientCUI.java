@@ -57,6 +57,7 @@ public class  ShopClientCUI {
       String email = liesEingabe();
       while (eshop.istRegistriert(email)) {
         System.out.println("Email bereits vergeben, bitte andere Email angeben.");
+        System.out.println("Email: ");
         email = liesEingabe();
       }
       passwordFenster();
@@ -95,27 +96,31 @@ public class  ShopClientCUI {
     System.out.println("Willkommen im Mitarbeitermenü");
     System.out.println("Artikel hinzufügen : 'a'");
     System.out.println("Bestand verändern : 'b'");
-    System.out.println("Mitarbeiter registrieren: 'c'");
-    System.out.println("Menü verlassen : 'e'");
+    System.out.println("Bestand ansehen: 'c'");
+    System.out.println("Mitarbeiter registrieren: 'd'");
   }
 
   private void gibKundenMenue () {
     System.out.println("Willkommen im Kundenmenü");
     System.out.println("Alle Artikel anschauen: 'a'");
-    System.out.println("Artikel kaufen : 'b'");
+    System.out.println("Artikel den Warenkorb hinzufügen : 'b'");
     System.out.println("Warenkorb ausgeben: 'c'");
-    System.out.println(" 'd'");
-
+    System.out.println("Artikel kaufen: 'd'");
+    System.out.println("Warenkorb leeren: 'e'");
   }
 
   private void gibMenueAus(User user) {
+    String input;
     try {
-       String input;
+        if(user == null) {
+          System.out.println("Bitte mit richtigen Daten anmelden oder neu registrieren.");
+          return;
+        }
       if(user instanceof Mitarbeiter) {
         gibMitarbeiterMenue();
         input = liesEingabe();
         verarbeiteEingabeMitarbeiter(input ,user.getMail());
-      } else {
+      } else if (user instanceof Kunde) {
         gibKundenMenue();
         input = liesEingabe();
       }
@@ -133,73 +138,152 @@ public class  ShopClientCUI {
     String vorname;
     String nachname;
 
+      switch (line) {
+        case "a" -> {
+          System.out.println("Artikelname: ");
+          artikelname = liesEingabe();
+          System.out.println("Menge: ");
+          menge = Integer.parseInt(liesEingabe());
+          System.out.println("Preis: ");
+          preis = Double.parseDouble(liesEingabe());
+          System.out.println("Artikelnummer: ");
+          artikelNummer = Integer.parseInt(liesEingabe());
+          Artikel artikel = new Artikel(menge, artikelNummer, artikelname, preis, true);
+          eshop.artikelEinfuegen(artikel, menge, email);
+          System.out.println("Artikel" + artikelname + " wurde hinzugefügt.");
+        }
+        case "b" -> {
+          System.out.println("Artikelname: ");
+          artikelname = liesEingabe();
+          while(eshop.artikelDa(artikelname) == null) {
+            System.out.println("Artikelname nicht gefunden.");
+            System.out.println("Artikelname: ");
+            artikelname = liesEingabe();
+          }
+          Artikel artikel = eshop.artikelDa(artikelname);
+          System.out.println("Menge: ");
+          menge = Integer.parseInt(liesEingabe());
+          eshop.artikelAuslagern(artikel, menge, email);
+        }
+        case "c" -> {
+          System.out.println(eshop.getArtikelBestand());
+        }
+        case "d" -> {
+          System.out.println("Email: ");
+          email = liesEingabe();
+          System.out.println("Passwort: ");
+          passwort = liesEingabe();
+          System.out.println("Vorname: ");
+          vorname = liesEingabe();
+          System.out.println("Nachname: ");
+          nachname = liesEingabe();
+          Mitarbeiter mitarbeiter = new Mitarbeiter(email, passwort, vorname, nachname);
+          eshop.einfuegenMitarbeiter(mitarbeiter);
+        }
+      }
+
+
+  }
+
+  private void verarbeiteEingabeKunde(String line, String email) throws IOException {
+    String artikelName;
+    int menge;
+    Warenkorb warenkorb;
+
     switch (line) {
       case "a" -> {
-        System.out.println("Artikelname: ");
-        artikelname = liesEingabe();
-        System.out.println("Menge: ");
-        menge = Integer.parseInt(liesEingabe());
-        System.out.println("Preis: ");
-        preis = Double.parseDouble(liesEingabe());
-        System.out.println("Artikelnummer: ");
-        artikelNummer = Integer.parseInt(liesEingabe());
-        Artikel artikel = new Artikel(menge, artikelNummer, artikelname, preis, true);
-        eshop.artikelEinfuegen(artikel, menge, email);
-        System.out.println("Artikel" + artikelname + " wurde hinzugefügt.");
+        System.out.println(eshop.getArtikelBestand());
       }
       case "b" -> {
         System.out.println("Artikelname: ");
-        artikelname = liesEingabe();
-        Artikel artikel = eshop.artikelDa(artikelname);
+        artikelName = liesEingabe();
         System.out.println("Menge: ");
         menge = Integer.parseInt(liesEingabe());
-        eshop.artikelAuslagern(artikel, menge, email);
-        System.out.println("Artikel: " + artikelname +" wurde " + menge + " mal " + " ausgelagert.");
+        eshop.artikelHinzufuegen(eshop.artikelDa(artikelName), menge);
       }
       case "c" -> {
-        System.out.println("Email: ");
-        email = liesEingabe();
-        System.out.println("Passwort: ");
-        passwort = liesEingabe();
-        System.out.println("Vorname: ");
-        vorname = liesEingabe();
-        System.out.println("Nachname: ");
-        nachname = liesEingabe();
-        Mitarbeiter mitarbeiter = new Mitarbeiter(email, passwort, vorname, nachname);
-        eshop.einfuegenMitarbeiter(mitarbeiter);
+        System.out.println(eshop.listeAusgeben());
+      }
+      case "d" -> {
+        System.out.println("Kaufen wird erzeugt.");
+        eshop.Kaufen(eshop.getWarenkorb(), email);
+      }
+      case "e" -> {
+        eshop.warenkorbLeeren();
       }
     }
-
-  }
-
-  private void verarbeiteEingabeKunde() throws LoginException {
   }
 //Todo: Verstehen wie diese Methode funktioniert Yunus und Naufal
-  private void run() {
-    String email = "";
-    String password = "";
-    String input = "";
-    Mitarbeiter w = new Mitarbeiter("Admin","Franz", "franz.hans@gmail.com", "123abc");
-    eshop.einfuegenMitarbeiter(w);
-    do {
+private void run() {
+  Mitarbeiter admin = new Mitarbeiter("Admin", "Franz", "admin@admin", "123abc");
+  eshop.einfuegenMitarbeiter(admin);
+
+  boolean programmLaeuft = true;
+
+  while (programmLaeuft) {
+    User aktuellerUser = null;
+
+    // Login-/Registrierungsschleife
+    while (aktuellerUser == null) {
       wilkommenFenster();
       try {
-        input = liesEingabe();
-        switch (input) {
-          case "a" -> {
-            gibMenueAus(einloggen());
-          }
+        String eingabe = liesEingabe();
+        switch (eingabe) {
+          case "a" -> aktuellerUser = einloggen();
           case "b" -> {
             registrieren();
           }
+          case "q" -> {
+            programmLaeuft = false;
+            System.out.println("Programm wird beendet.");
+            return;
+          }
+          default -> System.out.println("Ungültige Eingabe.");
         }
-
       } catch (IOException e) {
         e.printStackTrace();
-
       }
-    }  while (!input.equals("q"));
+    }
+
+    // Hauptmenü-Schleife für eingeloggten Benutzer
+    boolean benutzerAngemeldet = true;
+    while (benutzerAngemeldet) {
+      try {
+        if (aktuellerUser instanceof Mitarbeiter) {
+          gibMitarbeiterMenue();
+          System.out.println("Zurück zum Login mit 'logout', Programm beenden mit 'q'");
+          String input = liesEingabe();
+          switch (input) {
+            case "logout" -> benutzerAngemeldet = false;
+            case "q" -> {
+              programmLaeuft = false;
+              return;
+            }
+            default -> verarbeiteEingabeMitarbeiter(input, aktuellerUser.getMail());
+          }
+        } else if (aktuellerUser instanceof Kunde) {
+          gibKundenMenue();
+          System.out.println("Zurück zum Login mit 'logout', Programm beenden mit 'q'");
+          String input = liesEingabe();
+          switch (input) {
+            case "logout" -> {
+              benutzerAngemeldet = false;
+              aktuellerUser = null;
+            }
+            case "q" -> {
+              programmLaeuft = false;
+              return;
+            }
+            default -> verarbeiteEingabeKunde(input, aktuellerUser.getMail());
+          }
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
+}
+
 
   public static void main(String[] args) {
     ShopClientCUI cui;

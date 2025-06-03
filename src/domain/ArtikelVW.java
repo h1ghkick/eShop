@@ -2,6 +2,7 @@ package domain;
 
 import entities.Artikel;
 import entities.Ereignis;
+import entities.Warenkorb;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,10 +32,13 @@ public class ArtikelVW {
             if (a.equals(artikel)) {
                 if (a.getArtikelAnzahl() >= menge) {
                     a.setArtikelAnzahl(a.getArtikelAnzahl() - menge);
+                    if(a.getArtikelAnzahl() == 0){
+                        a.setArtikelVerfuegbar(false);
+                    }
                     logEreignis(a, menge, "Auslagerung", benutzerEmail);
                     return true;
                 }
-                return false; // Nicht genug Bestand
+                return false;// Nicht genug Bestand
             }
         }
         return false; // Artikel nicht gefunden
@@ -47,7 +51,7 @@ public class ArtikelVW {
     }
     public Artikel artikelDa(String artikelBezeichnung) {
         for (Artikel a : artikelBestand) {
-            if (a.equals(artikelBezeichnung)) {
+            if (a.getArtikelBezeichnung().equals(artikelBezeichnung)) {
                 return a;
             }
         }

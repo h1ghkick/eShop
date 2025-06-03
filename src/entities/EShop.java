@@ -3,6 +3,7 @@ package entities;
 import domain.KundenVW;
 import domain.MitarbeiterVW;
 import domain.ArtikelVW;
+import entities.Warenkorb;
 
 import java.util.List;
 import java.util.Map;
@@ -17,16 +18,15 @@ public class EShop {
     private KundenVW kundenVW;
     private MitarbeiterVW mitarbeiterVW;
     private ArtikelVW artikelVW;
-
+    private Warenkorb warenkorb;
 
 
     public EShop()  {
         this.kundenVW = new KundenVW();
         this.mitarbeiterVW = new MitarbeiterVW();
         this.artikelVW = new ArtikelVW();
-
+        this.warenkorb = new Warenkorb();
     }
-
 
     public User einloggen(String email, String password) throws LoginException {
         for (Kunde k : kundenVW.getAlleKunden() ) {
@@ -67,23 +67,47 @@ public class EShop {
         }
         warenkorb.warenkorbLeeren();
     }
+
     public boolean artikelAuslagern(Artikel key, int menge, String email){
         return artikelVW.artikelAuslagern(key,menge,email);
     }
+
     public Artikel artikelDa(String artikelBezeichnung) {
 
         return artikelVW.artikelDa(artikelBezeichnung);
     }
+
     public void einfuegenMitarbeiter(Mitarbeiter mitarbeiter) {
         mitarbeiterVW.einfuegenMitarbeiter(mitarbeiter);
     }
+
     public void einfuegenKunden(Kunde kunde) {
         kundenVW.einfuegenKunden(kunde);
     }
+
     public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail) {
         artikelVW.artikelEinfuegen(artikel, menge, benutzerEmail);
     }
 
+    public List<Artikel> getArtikelBestand() {
+        return artikelVW.getAlleArtikel();
+    }
+
+    public void artikelHinzufuegen(Artikel artikel, int menge) {
+        warenkorb.artikelHinzufuegen(artikel, menge);
+    }
+
+    public Map<Artikel, Integer> listeAusgeben() {
+        return warenkorb.listeAusgeben();
+    }
+
+    public Warenkorb getWarenkorb() {
+        return this.warenkorb;
+    }
+
+    public void warenkorbLeeren() {
+        this.warenkorb.warenkorbLeeren();
+    }
 }
 
 

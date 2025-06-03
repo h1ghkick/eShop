@@ -60,7 +60,7 @@ public class Warenkorb {
         if (artikelListe.containsKey(artikel)) {
             artikelListe.remove(artikel); // entfernt den Artikel aus der Map
         } else {
-            return "Artikel ist nicht im Warenkorb.";
+            return "Artikel ist nicht mehr im Warenkorb.";
         }
         return "";
     }
