@@ -1,18 +1,16 @@
 package ui.cui;
 
-import domain.ArtikelVW;
-import domain.KundenVW;
-import domain.MitarbeiterVW;
+import Persistence.FilePersistenceManager;
 import entities.Artikel;
 import entities.Kunde;
 import entities.Mitarbeiter;
-import entities.Rechnung;
 import entities.Warenkorb;
-import entities.EShop;
+import domain.EShop;
 import exception.LoginException;
 import entities.User;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -286,12 +284,38 @@ private void run() {
 
 
   public static void main(String[] args) {
-    ShopClientCUI cui;
-    try {
-      cui = new ShopClientCUI();
-      cui.run();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+//    ShopClientCUI cui;
+//    try {
+//      cui = new ShopClientCUI();
+//      cui.run();
+//    } catch (IOException e) {
+//      e.printStackTrace();
+
+    FilePersistenceManager pers = new FilePersistenceManager();
+      try {
+          pers.openForWriting("Artikel.txt");
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+      Artikel artikel = new Artikel(12, 21, "cola",22.12,true );
+      try {
+          pers.speicherArtikel(artikel);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+      pers.close();
+
+      try {
+          pers.openForReading("Artikel.txt");
+          Artikel artikelAktuell = pers.ladeArtikel();
+        System.out.println(artikelAktuell.getArtikelAnzahl());
+      } catch ( IOException e) {
+          throw new RuntimeException(e);
+      }
+      finally {
+        pers.close();
+      }
+
   }
-}
+  }
+

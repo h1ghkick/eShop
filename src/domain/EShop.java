@@ -1,9 +1,6 @@
-package entities;
+package domain;
 
-import domain.KundenVW;
-import domain.MitarbeiterVW;
-import domain.ArtikelVW;
-import entities.Warenkorb;
+import entities.*;
 
 import java.util.List;
 import java.util.Map;
@@ -76,6 +73,7 @@ public class EShop {
 
         return artikelVW.artikelDa(artikelBezeichnung);
     }
+
 
     public void einfuegenMitarbeiter(Mitarbeiter mitarbeiter) {
         mitarbeiterVW.einfuegenMitarbeiter(mitarbeiter);
