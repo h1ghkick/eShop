@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import exception.LoginException;
+import exception.WarenkorbIstLeer;
 
 
 /**
@@ -48,11 +49,14 @@ public class EShop {
        return kundenVW.istRegistriert(email);
     }
 
-    public void Kaufen(Warenkorb warenkorb,String email){
+    public void Kaufen(Warenkorb warenkorb,String email) throws WarenkorbIstLeer {
         Map<Artikel, Integer> liste = warenkorb.listeAusgeben();
-        for(Artikel key : liste.keySet()){
+       if(liste == null || liste.isEmpty()) {
+           throw new WarenkorbIstLeer();
+       }
+        for(Artikel key : liste.keySet()) {
             int menge = liste.get(key);
-            artikelVW.artikelAuslagern(key,menge,email);
+            artikelVW.artikelAuslagern(key, menge, email);
         }
         List<Kunde> kundenListe = kundenVW.getAlleKunden();
         for(Kunde key : kundenListe){
@@ -60,6 +64,7 @@ public class EShop {
             if(email.equals(key.getMail())){
                 Rechnung rechnung = new Rechnung();
                 rechnung.rechnungStellen(key,liste);
+                break;
             }
         }
         warenkorb.warenkorbLeeren();

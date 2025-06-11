@@ -24,8 +24,9 @@ public class Artikel {
     @Override
     public String toString(){
         String verfuegbarkeit = artikelVerfuegbar ? "verfügbar" : "nicht verfügbar";
-        return ("NR: " + artikelNummer + " || Titel: " + artikelBezeichnung + " || Anzahl: " + artikelAnzahl + " || Preis: " + preis + "€ || " + verfuegbarkeit);
+        return ("NR: " + artikelNummer + " || Titel: " + artikelBezeichnung + " || Anzahl: " + artikelAnzahl + " || Preis: " + preis + "€ || " + verfuegbarkeit + "\n");
     }
+
 
     @Override
     public boolean equals(Object andererArtikel){
