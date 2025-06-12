@@ -2,7 +2,7 @@ package Persistence;
 
 import java.io.IOException;
 
-import entities.Artikel;
+import entities.*;
 
 /**
  * @author teschke
@@ -27,22 +27,23 @@ public interface PersistenceManager {
      *
      * @return Buch-Objekt, wenn Einlesen erfolgreich, false null
      */
-    public Artikel ladeArtikel() throws IOException;
 
     /**
      * Methode zum Schreiben der Buchdaten in eine externe Datenquelle.
      *
-     * @param artiekl Buch-Objekt, das gespeichert werden soll
+     * @param artikel Buch-Objekt, das gespeichert werden soll
      * @return true, wenn Schreibvorgang erfolgreich, false sonst
      */
-    public boolean speichernArtikel(Artikel artiekl) throws IOException;
 
-	/*
-	 *  Wenn später mal eine Kundenverwaltung ergänzt wird:
+    public Artikel ladeArtikel() throws IOException;
 
-	public Kunde ladeKunde() throws IOException;
+    public boolean speicherArtikel(Artikel artikel) throws IOException;
 
-	public boolean speichereKunde(Kunde k) throws IOException;
+    public Kunde ladeKunde() throws IOException;
 
-	*/
+    public boolean speicherKunde(Kunde kunde) throws IOException;
+
+    public Mitarbeiter ladeMitarbeiter() throws  IOException;
+    public boolean speicherMitarbeiter(Mitarbeiter mitarbeiter) throws  IOException;
+
 }

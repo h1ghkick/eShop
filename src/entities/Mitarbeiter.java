@@ -17,4 +17,9 @@ public class Mitarbeiter extends User {
     public Mitarbeiter mitarbeiterAufnehmen(String firstName, String lastName, String email, String password) {
         return new Mitarbeiter(firstName, lastName, email, password);
     }
+    @Override
+    public String toString() {
+        return "Mitarbeiter: " + getFirstName() + " " + getLastName() + ", " + getMail();
+    }
+
 }

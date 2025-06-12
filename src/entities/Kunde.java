@@ -40,5 +40,22 @@ public class Kunde extends User {
         return strasse + " " + wohnort + " " + postleitzahl;
     }
 
+    public int getPostleitzahl() {
+        return postleitzahl;
+    }
+    public String getWohnort() {
+        return wohnort;
+    }
+    public String getStrasse() {
+        return strasse;
+    }
+    @Override
+    public String toString() {
+        return String.format("Kunde: %s %s\nEmail: %s\nAdresse: %s",
+                getFirstName(), getLastName(), getMail(), getAdresse());
+    }
+
+
+
 
 }

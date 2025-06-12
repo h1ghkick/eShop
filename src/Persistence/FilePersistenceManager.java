@@ -81,7 +81,6 @@ public class FilePersistenceManager implements PersistenceManager {
             // keine Daten mehr vorhanden
             return null;
         }
-        System.out.println("Test2"+ artikelBezeichnung + artikelAnzahl + artikelAnzahlToString);
 
 
         //Int Artikel Preis
@@ -101,62 +100,104 @@ public class FilePersistenceManager implements PersistenceManager {
         return new Artikel(artikelAnzahlToString,artikelNummerToString,artikelBezeichnung,artikelPreisToString,verfuegbar);
     }
 
-    //Todo: ladeKunde, ladeMitareiter (sieht so wie ladeArtikelaus)
 
-//    public Kunde ladeKunde() throws IOException {
-//        //Int Artikelanzahl
-//        String artikelAnzahl = liesZeile();
-//        if(artikelAnzahl ==null){
-//            return null;
-//        }
-//        int nummerToString = Integer.parseInt(artikelAnzahl);
-//
-//        //Int Artikelnummer
-//        String artikelnummer = liesZeile();
-//        if (artikelnummer == null) {
-//            return null;
-//        }
-//        int artikelNummerToString = Integer.parseInt(artikelnummer);
-//
-//        //String Artikelbezeichnung einlesen
-//        String artikelBezeichnung = liesZeile();
-//        if (artikelBezeichnung == null) {
-//            // keine Daten mehr vorhanden
-//            return null;
-//        }
-//
-//        //Int Artikel Preis
-//        String artikelPreis = liesZeile();
-//        if (artikelPreis == null) {
-//            // keine Daten mehr vorhanden
-//            return null;
-//        }
-//        double artikelToString = Double.parseDouble(artikelPreis);
-//
-//        // ArtikelVrerfuegbar?
-//        String artikelVerfuegbar = liesZeile();
-//        // Codierung des Ausleihstatus in boolean umwandeln
-//        boolean verfuegbar = verfuegbarCode.equals("t") ? true : false;
-//
-//        // neues Buch-Objekt anlegen und zurückgeben
-//        return new Artikel(artikelAnzahl,artikelnummer,artikelBezeichnung,artikel);
-//    }
-//
+   @Override
+    public Kunde ladeKunde() throws IOException {
+        //String firstName
+        String firstName = liesZeile();
+        if(firstName ==null){
+            return null;
+        }
 
+        //String lastName
+        String lastName = liesZeile();
+        if (lastName == null) {
+            return null;
+        }
+
+        //String email
+        String email = liesZeile();
+        if (email == null) {
+            // keine Daten mehr vorhanden
+            return null;
+        }
+
+        //String password
+        String password = liesZeile();
+        if (password == null) {
+            // keine Daten mehr vorhanden
+            return null;
+        }
+
+        //String Strasse
+        String strasse = liesZeile();
+        if (strasse == null) {
+            // keine Daten mehr vorhanden
+            return null;
+        }
+        //String Wohnort
+        String wohnort = liesZeile();
+        if (wohnort == null) {
+            // keine Daten mehr vorhanden
+            return null;
+        }
+        //Int postleitzahl
+        String postleitzahl = liesZeile();
+        if (postleitzahl == null) {
+            return null;
+        }
+        int postleitzahlToString = Integer.parseInt(postleitzahl);
+
+        // neues Objekt anlegen und zurückgeben
+        return new Kunde(firstName,lastName,email,password,strasse,wohnort,postleitzahlToString);
+    }
 
     @Override
-    public boolean speichernArtikel(Artikel artiekl) throws IOException {
-        return false;
+    public Mitarbeiter ladeMitarbeiter() throws IOException {
+        //String firstName
+        String firstName = liesZeile();
+        if(firstName ==null){
+            return null;
+        }
+
+        //String lastName
+        String lastName = liesZeile();
+        if (lastName == null) {
+            return null;
+        }
+
+        //String email
+        String email = liesZeile();
+        if (email == null) {
+            // keine Daten mehr vorhanden
+            return null;
+        }
+
+        //String password
+        String password = liesZeile();
+        if (password == null) {
+            // keine Daten mehr vorhanden
+            return null;
+        }
+
+        // neues Objekt anlegen und zurückgeben
+        return new Mitarbeiter(firstName,lastName,email,password);
     }
+
+
+
 
     /**
      * Methode zum Schreiben der Buchdaten in eine externe Datenquelle.
      * Das Verfügbarkeitsattribut wird in der Datenquelle (Datei) als "t" oder "f"
      * codiert abgelegt.
-     *
      * @param artikel Buch-Objekt, das gespeichert werden soll
      * @return true, wenn Schreibvorgang erfolgreich, false sonst
      */
+
+
+
+    @Override
     public boolean speicherArtikel(Artikel artikel) throws IOException {
         // Titel, Nummer und Verfügbarkeit schreiben
         schreibeZeile(String.valueOf(artikel.getArtikelAnzahl()));
@@ -168,24 +209,32 @@ public class FilePersistenceManager implements PersistenceManager {
         return true;
     }
 
-	/*
-	 *  Wenn später mal eine Kundenverwaltung ergänzt wird:
+    @Override
+    public boolean speicherKunde(Kunde kunde) throws IOException {
+        // Titel, Nummer und Verfügbarkeit schreiben
+        schreibeZeile(String.valueOf(kunde.getFirstName()));
+        schreibeZeile(String.valueOf(kunde.getLastName()));
+        schreibeZeile(String.valueOf(kunde.getMail()));
+        schreibeZeile(String.valueOf(kunde.getPassword()));
+        schreibeZeile(String.valueOf(kunde.getStrasse()));
+        schreibeZeile(String.valueOf(kunde.getWohnort()));
+        schreibeZeile(String.valueOf(kunde.getPostleitzahl()));
+        return  true;
+    }
 
-	public Kunde ladeKunde() throws IOException {
-		// TODO: Implementieren
-		return null;
-	}
+    public boolean speicherMitarbeiter(Mitarbeiter mitarbeiter) throws IOException{
+        schreibeZeile(String.valueOf(mitarbeiter.getFirstName()));
+        schreibeZeile(String.valueOf(mitarbeiter.getLastName()));
+        schreibeZeile(String.valueOf(mitarbeiter.getMail()));
+        schreibeZeile(String.valueOf(mitarbeiter.getPassword()));
+        return  true;
+    }
 
-	public boolean speichereKunde(Kunde k) throws IOException {
-		// TODO: Implementieren
-		return false;
-	}
 
-	*/
 
-    /*
-     * Private Hilfsmethoden
-     */
+
+
+
 
     private String liesZeile() throws IOException {
         if (reader != null)

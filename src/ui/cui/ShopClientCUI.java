@@ -284,38 +284,56 @@ private void run() {
 
 
   public static void main(String[] args) {
-//    ShopClientCUI cui;
-//    try {
-//      cui = new ShopClientCUI();
-//      cui.run();
-//    } catch (IOException e) {
-//      e.printStackTrace();
+    FilePersistenceManager pm = new FilePersistenceManager();
 
-    FilePersistenceManager pers = new FilePersistenceManager();
-      try {
-          pers.openForWriting("Artikel.txt");
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
-      Artikel artikel = new Artikel(12, 21, "cola",22.12,true );
-      try {
-          pers.speicherArtikel(artikel);
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
-      pers.close();
+    try {
+      // === MITARBEITER TESTEN ===
+      Mitarbeiter m1 = new Mitarbeiter("Max", "Muster", "max@muster.de", "pass123");
 
-      try {
-          pers.openForReading("Artikel.txt");
-          Artikel artikelAktuell = pers.ladeArtikel();
-        System.out.println(artikelAktuell.getArtikelAnzahl());
-      } catch ( IOException e) {
-          throw new RuntimeException(e);
-      }
-      finally {
-        pers.close();
-      }
+      pm.openForWriting("Mitarbeiter.txt");
+      pm.speicherMitarbeiter(m1);
+      pm.close();
+
+      pm.openForReading("Mitarbeiter.txt");
+      Mitarbeiter geladenerMitarbeiter = pm.ladeMitarbeiter();
+      pm.close();
+
+      System.out.println("Geladener Mitarbeiter:");
+      System.out.println(geladenerMitarbeiter);
+
+      // === KUNDE TESTEN ===
+      Kunde k1 = new Kunde("Anna", "Beispiel", "anna@example.com", "pass456", "Hauptstraße 1", "Berlin", 10115);
+
+      pm.openForWriting("Kunde.txt");
+      pm.speicherKunde(k1);
+      pm.close();
+
+      pm.openForReading("Kunde.txt");
+      Kunde geladenerKunde = pm.ladeKunde();
+      pm.close();
+
+      System.out.println("\nGeladener Kunde:");
+      System.out.println(geladenerKunde);
+
+      // === ARTIKEL TESTEN ===
+      Artikel a1 = new Artikel(5, 1234, "Bürostuhl", 89.99, true);
+
+      pm.openForWriting("Artikel.txt");
+      pm.speicherArtikel(a1);
+      pm.close();
+
+      pm.openForReading("Artikel.txt");
+      Artikel geladenerArtikel = pm.ladeArtikel();
+      pm.close();
+
+      System.out.println("\nGeladener Artikel:");
+      System.out.println(geladenerArtikel);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
   }
-  }
+
 
