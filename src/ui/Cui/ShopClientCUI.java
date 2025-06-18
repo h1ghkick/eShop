@@ -1,4 +1,4 @@
-package ui.cui;
+package ui.Cui;
 
 import Persistence.FilePersistenceManager;
 import entities.Artikel;
@@ -10,7 +10,6 @@ import exception.LoginException;
 import entities.User;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
