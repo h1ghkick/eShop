@@ -8,6 +8,9 @@ import entities.Warenkorb;
 import domain.EShop;
 import exception.LoginException;
 import entities.User;
+import exception.PasswortZuSchwach;
+import exception.PostleitzahlZuSchwach;
+import exception.WarenkorbIstLeer;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -19,9 +22,8 @@ public class  ShopClientCUI {
   private BufferedReader reader;
 
 
-  public ShopClientCUI() throws IOException {
-    eshop = new EShop();
-
+  public ShopClientCUI(String kundenVW, String artikelVW, String mitarbeiterVW) throws IOException {
+    eshop = new EShop(kundenVW, artikelVW, mitarbeiterVW);
     reader = new BufferedReader(new InputStreamReader(System.in));
   }
 
@@ -50,32 +52,70 @@ public class  ShopClientCUI {
   }
 
   private void registrieren() {
-    emailFenster();
     try {
-      String email = liesEingabe();
-      while (eshop.istRegistriert(email)) {
-        System.out.println("Email bereits vergeben, bitte andere Email angeben.");
-        System.out.println("Email: ");
+      String email;
+      // E-Mail prüfen
+      do {
+        emailFenster();
         email = liesEingabe();
+        if (eshop.istRegistriert(email)) {
+          System.out.println("Email bereits vergeben, bitte andere Email angeben.");
+        }
+      } while (eshop.istRegistriert(email));
+
+      // Passwort prüfen
+      String passwort = null;
+      boolean passwortGueltig = false;
+      while (!passwortGueltig) {
+        try {
+          passwordFenster();
+          passwort = liesEingabe();
+          eshop.gueltigesPasswort(passwort); // wirft PasswortZuSchwach
+          passwortGueltig = true;
+        } catch (PasswortZuSchwach e) {
+          System.out.println("Ungültiges Passwort: " + e.getMessage());
+        }
       }
-      passwordFenster();
-      String passwort = liesEingabe();
+
       System.out.println("Vorname: ");
       String firstName = liesEingabe();
+
       System.out.println("Nachname: ");
       String lastName = liesEingabe();
+
       System.out.println("Wohnort: ");
       String wohnort = liesEingabe();
-      System.out.println("Postleitzahl: ");
-      int postleitzahl = Integer.parseInt(liesEingabe());
+
+      // Postleitzahl prüfen
+      int postleitzahl = 0;
+      boolean plzGueltig = false;
+      while (!plzGueltig) {
+        try {
+          System.out.println("Postleitzahl: ");
+          String plzEingabe = liesEingabe();
+          eshop.gueltigePostleitzahl(plzEingabe); // wirft PostleitzahlZuSchwach
+          postleitzahl = Integer.parseInt(plzEingabe);
+          plzGueltig = true;
+        } catch (PostleitzahlZuSchwach e) {
+          System.out.println("Ungültige Postleitzahl: " + e.getMessage());
+        } catch (NumberFormatException e) {
+          System.out.println("Bitte nur Zahlen für die PLZ eingeben.");
+        }
+      }
+
       System.out.println("Strasse: ");
       String strasse = liesEingabe();
+
+      // Kunde erzeugen und speichern
       Kunde kunde = new Kunde(firstName, lastName, email, passwort, strasse, wohnort, postleitzahl);
       eshop.einfuegenKunden(kunde);
+      System.out.println("Registrierung erfolgreich!");
+
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println("Ein Fehler beim Einlesen ist aufgetreten: " + e.getMessage());
     }
   }
+
 
   private void emailFenster() {
     System.out.println("E-mail: ");
@@ -96,6 +136,7 @@ public class  ShopClientCUI {
     System.out.println("Bestand verändern : 'b'");
     System.out.println("Bestand ansehen: 'c'");
     System.out.println("Mitarbeiter registrieren: 'd'");
+    System.out.println("Speichern: 'e'");
   }
 
   private void gibKundenMenue () {
@@ -178,12 +219,16 @@ public class  ShopClientCUI {
           Mitarbeiter mitarbeiter = new Mitarbeiter(email, passwort, vorname, nachname);
           eshop.einfuegenMitarbeiter(mitarbeiter);
         }
+        case "e" -> {
+          eshop.speicherOption();
+          System.out.println("Datei wurde gespeichert!");
+        }
       }
 
 
   }
 
-  private void verarbeiteEingabeKunde(String line, String email) throws IOException {
+  private void verarbeiteEingabeKunde(String line, String email) throws IOException, WarenkorbIstLeer {
     String artikelName;
     int menge;
     Warenkorb warenkorb;
@@ -213,8 +258,6 @@ public class  ShopClientCUI {
   }
 //Todo: Verstehen wie diese Methode funktioniert Yunus und Naufal
 private void run() {
-  Mitarbeiter admin = new Mitarbeiter("Admin", "Franz", "admin@admin", "123abc");
-  eshop.einfuegenMitarbeiter(admin);
 
   boolean programmLaeuft = true;
 
@@ -275,7 +318,7 @@ private void run() {
             default -> verarbeiteEingabeKunde(input, aktuellerUser.getMail());
           }
         }
-      } catch (IOException e) {
+      } catch (IOException | WarenkorbIstLeer e) {
         e.printStackTrace();
       }
     }
@@ -284,56 +327,16 @@ private void run() {
 
 
   public static void main(String[] args) {
-    FilePersistenceManager pm = new FilePersistenceManager();
 
+    ShopClientCUI cui;
     try {
-      // === MITARBEITER TESTEN ===
-      Mitarbeiter m1 = new Mitarbeiter("Max", "Muster", "max@muster.de", "pass123");
-
-      pm.openForWriting("Mitarbeiter.txt");
-      pm.speicherMitarbeiter(m1);
-      pm.close();
-
-      pm.openForReading("Mitarbeiter.txt");
-      Mitarbeiter geladenerMitarbeiter = pm.ladeMitarbeiter();
-      pm.close();
-
-      System.out.println("Geladener Mitarbeiter:");
-      System.out.println(geladenerMitarbeiter);
-
-      // === KUNDE TESTEN ===
-      Kunde k1 = new Kunde("Anna", "Beispiel", "anna@example.com", "pass456", "Hauptstraße 1", "Berlin", 10115);
-
-      pm.openForWriting("Kunde.txt");
-      pm.speicherKunde(k1);
-      pm.close();
-
-      pm.openForReading("Kunde.txt");
-      Kunde geladenerKunde = pm.ladeKunde();
-      pm.close();
-
-      System.out.println("\nGeladener Kunde:");
-      System.out.println(geladenerKunde);
-
-      // === ARTIKEL TESTEN ===
-      Artikel a1 = new Artikel(5, 1234, "Bürostuhl", 89.99, true);
-
-      pm.openForWriting("Artikel.txt");
-      pm.speicherArtikel(a1);
-      pm.close();
-
-      pm.openForReading("Artikel.txt");
-      Artikel geladenerArtikel = pm.ladeArtikel();
-      pm.close();
-
-      System.out.println("\nGeladener Artikel:");
-      System.out.println(geladenerArtikel);
-
-    } catch (Exception e) {
+      cui = new ShopClientCUI("Kunde.txt", "Artikel.txt", "Mitarbeiter.txt");
+      cui.run();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
-
-  }
+}
 
 

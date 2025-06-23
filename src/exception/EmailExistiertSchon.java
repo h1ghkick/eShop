@@ -1,4 +1,8 @@
 package exception;
 
-public class EmailExistiertSchon {
+public class EmailExistiertSchon extends Exception {
+
+    public EmailExistiertSchon() {
+        super("Email existiert schon!");
+    }
 }

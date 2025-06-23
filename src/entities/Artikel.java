@@ -21,6 +21,9 @@ public class Artikel {
         this(artikelAnzahl, artikelNummer, artikelBezeichnung, preis, true);
     }
 
+    public Artikel(int nummerAlsInt, int artikelNummerAlsInt, String titel, int preisAlsInt) {
+    }
+
     @Override
     public String toString(){
         String verfuegbarkeit = artikelVerfuegbar ? "verfügbar" : "nicht verfügbar";
@@ -37,7 +40,6 @@ public class Artikel {
             return false;
         }
     }
-
 
 
 
