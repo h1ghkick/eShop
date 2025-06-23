@@ -31,7 +31,6 @@ public interface PersistenceManager {
     /**
      * Methode zum Schreiben der Buchdaten in eine externe Datenquelle.
      *
-     * @param artikel Buch-Objekt, das gespeichert werden soll
      * @return true, wenn Schreibvorgang erfolgreich, false sonst
      */
 
