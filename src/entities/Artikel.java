@@ -21,11 +21,15 @@ public class Artikel {
         this(artikelAnzahl, artikelNummer, artikelBezeichnung, preis, true);
     }
 
+    public Artikel(int nummerAlsInt, int artikelNummerAlsInt, String titel, int preisAlsInt) {
+    }
+
     @Override
     public String toString(){
         String verfuegbarkeit = artikelVerfuegbar ? "verfügbar" : "nicht verfügbar";
-        return ("NR: " + artikelNummer + " || Titel: " + artikelBezeichnung + " || Anzahl: " + artikelAnzahl + " || Preis: " + preis + "€ || " + verfuegbarkeit);
+        return ("NR: " + artikelNummer + " || Titel: " + artikelBezeichnung + " || Anzahl: " + artikelAnzahl + " || Preis: " + preis + "€ || " + verfuegbarkeit + "\n");
     }
+
 
     @Override
     public boolean equals(Object andererArtikel){
@@ -36,7 +40,6 @@ public class Artikel {
             return false;
         }
     }
-
 
 
 

@@ -1,9 +1,11 @@
 package domain;
 
+import Persistence.FilePersistenceManager;
+import Persistence.PersistenceManager;
 import entities.Artikel;
 import entities.Ereignis;
-import entities.Warenkorb;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,37 @@ import java.util.List;
 public class ArtikelVW {
     private List<Artikel> artikelBestand = new ArrayList<>();
     private List<Ereignis> ereignisse = new ArrayList<>();
+    private PersistenceManager pm = new FilePersistenceManager();
+
+    public void liesDaten(String datei) throws IOException {
+        // PersistenzManager für Lesevorgänge öffnen
+        pm.openForReading(datei);
+
+        Artikel einArtikel;
+        do {
+            // Buch-Objekt einlesen
+            einArtikel = pm.ladeArtikel();
+            if (einArtikel != null) {
+                // Buch in Liste einfügen
+                artikelEinfuegen(einArtikel, einArtikel.getArtikelAnzahl(), einArtikel.getArtikelBezeichnung());
+            }
+        } while (einArtikel != null);
+
+        // Persistenz-Schnittstelle wieder schließen
+        pm.close();
+    }
+
+    public void schreibeDaten(String datei) throws IOException  {
+        // PersistenzManager für Schreibvorgänge öffnen
+        pm.openForWriting(datei);
+
+        for (Artikel artikel: artikelBestand) {
+            pm.speicherArtikel(artikel);
+        }
+
+        // Persistenz-Schnittstelle wieder schließen
+        pm.close();
+    }
 
     // Artikel ins Lager einfügen (neu oder Bestand erhöhen)
     public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail) {
