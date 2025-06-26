@@ -1,122 +1,106 @@
 package ui.gui.gui.Panels;
 
-import javax.swing.*;
-import entities.Artikel;
 import domain.EShop;
+import entities.Artikel;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 
 public class AddArtikelPanel extends JPanel {
     public interface AddArtikelListener {
         void onArtikelAdded(Artikel artikel);
     }
 
-    private EShop eshop = null;
-    private AddArtikelListener addListener = null;
+    private final EShop eshop;
+    private final AddArtikelListener listener;
 
-    private JButton addButton;
-    private JTextField titleTextField = null;
-    private JTextField artikelNummerTextField = null;
-    private JTextField artikelpreisTextField = null;
-    private JTextField artikelMengeTextField = null;
-    private JTextField benutzerEmailTextField = null;
+    private final JTextField titelField;
+    private final JTextField nummerField;
+    private final JTextField preisField;
+    private final JTextField mengeField;
+    private final JButton addButton;
 
-    public AddArtikelPanel(EShop eshop, AddArtikelListener addListener) {
-        this.eshop = eshop;
-        this.addListener = addListener;
+    public AddArtikelPanel(EShop eshop, AddArtikelListener listener) {
+        this.eshop    = eshop;
+        this.listener = listener;
 
-        setupUI();
+        // Felder anlegen
+        titelField  = new JTextField(20);
+        nummerField = new JTextField(20);
+        preisField  = new JTextField(20);
+        mengeField  = new JTextField(20);
+        addButton   = new JButton("Hinzufügen");
 
-        setupEvents();
+        initLayout();
+        initEvents();
     }
 
-    private void setupUI() {
-        // BoxLayout (vertikal)
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    private void initLayout() {
+        setBorder(BorderFactory.createTitledBorder("Artikel einfügen"));
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5,5,5,5);
+        c.fill   = GridBagConstraints.HORIZONTAL;
 
-        // Abstandhalter ("Filler") zwischen Rand und erstem Element
-        Dimension borderMinSize = new Dimension(5, 10);
-        Dimension borderPrefSize = new Dimension(5, 10);
-        Dimension borderMaxSize = new Dimension(5, 10);
-        this.add(new Box.Filler(borderMinSize, borderPrefSize, borderMaxSize));
+        // Zeile 0: Titel
+        c.gridx=0; c.gridy=0; c.weightx=0; add(new JLabel("Titel:"), c);
+        c.gridx=1; c.weightx=1; add(titelField, c);
 
-        // Eingabefelder
-        this.add(new JLabel("Titel: "));
-        titleTextField = new JTextField();
-        this.add(titleTextField);
-        this.add(new JLabel("Artikelnummer: "));
-        artikelNummerTextField = new JTextField();
-        this.add(artikelNummerTextField);
-        this.add(new JLabel("Artikelpreis: "));
-        artikelpreisTextField = new JTextField();
-        this.add(artikelpreisTextField);
-        this.add(new JLabel("Menge: "));
-        artikelMengeTextField = new JTextField();
-        this.add(artikelMengeTextField);
-        this.add(new JLabel("Email: "));
-        benutzerEmailTextField = new JTextField();
-        this.add(benutzerEmailTextField);
+        // Zeile 1: Nummer
+        c.gridx=0; c.gridy=1; c.weightx=0; add(new JLabel("Artikelnummer:"), c);
+        c.gridx=1; c.weightx=1; add(nummerField, c);
 
+        // Zeile 2: Preis
+        c.gridx=0; c.gridy=2; c.weightx=0; add(new JLabel("Preis:"), c);
+        c.gridx=1; c.weightx=1; add(preisField, c);
 
+        // Zeile 3: Menge
+        c.gridx=0; c.gridy=3; c.weightx=0; add(new JLabel("Menge:"), c);
+        c.gridx=1; c.weightx=1; add(mengeField, c);
 
-
-        // Abstandhalter ("Filler") zwischen Eingabefeldern und Button
-        Dimension minSize = new Dimension(1, 20);
-        Dimension prefSize = new Dimension(1, Short.MAX_VALUE);
-        Dimension maxSize = new Dimension(1, Short.MAX_VALUE);
-        Box.Filler filler = new Box.Filler(minSize, prefSize, maxSize);
-        this.add(filler);
-
-        // Button
-        addButton = new JButton("Hinzufügen");
-        this.add(addButton);
-
-        // Abstandhalter ("Filler") zwischen letztem Element und Rand
-        this.add(new Box.Filler(borderMinSize, borderPrefSize, borderMaxSize));
-
-        // Umrandung
-        this.setBorder(BorderFactory.createTitledBorder("Einfügen"));
+        // Zeile 4: Button
+        c.gridx=0; c.gridy=4; c.gridwidth=2;
+        c.fill = GridBagConstraints.NONE; c.anchor = GridBagConstraints.CENTER;
+        add(addButton, c);
     }
 
-    private void setupEvents() {
-        addButton.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent ae) {
-                        System.out.println("Event: " + ae.getActionCommand());
-                        onAddButtonClick();
-                    }
-                });
-    }
+    private void initEvents() {
+        addButton.addActionListener(e -> {
+            String t = titelField.getText().trim();
+            String n = nummerField.getText().trim();
+            String p = preisField.getText().trim();
+            String m = mengeField.getText().trim();
 
-    private void onAddButtonClick() {
-        String titel = titleTextField.getText();
-        String artikelNummer = artikelNummerTextField.getText();
-        String artikelpreis = artikelpreisTextField.getText();
-        String artikelMenge = artikelMengeTextField.getText();
-        String benutzerEmail = benutzerEmailTextField.getText();
-
-
-        if (!artikelMenge.isEmpty() && !titel.isEmpty()) {
-            try {
-                int nummerAlsInt = Integer.parseInt(artikelMenge);
-                int preisAlsInt = Integer.parseInt(artikelpreis);
-                int artikelNummerAlsInt = Integer.parseInt(artikelNummer);
-
-                Artikel artikel = new Artikel(nummerAlsInt, artikelNummerAlsInt, titel, preisAlsInt);
-                eshop.artikelEinfuegen(artikel, Integer.parseInt(artikelMenge), benutzerEmail);
-                artikelNummerTextField.setText("");
-                titleTextField.setText("");
-                artikelpreisTextField.setText("");
-
-                // Am Ende Listener, d.h. unseren Frame benachrichtigen:
-                addListener.onArtikelAdded(artikel);
-            } catch (NumberFormatException nfe) {
-                System.err.println("Bitte eine Zahl eingeben.");
+            if (t.isEmpty() || n.isEmpty() || p.isEmpty() || m.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Bitte alle Felder ausfüllen.",
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        }
+
+            try {
+                int nummer = Integer.parseInt(n);
+                double preis  = Double.parseDouble(p);
+                int menge  = Integer.parseInt(m);
+
+                // Domäne aufrufen
+                Artikel artikel = new Artikel(menge, nummer, t, preis);
+                eshop.artikelEinfuegen(artikel, menge);
+
+                // UI zurücksetzen
+                titelField .setText("");
+                nummerField.setText("");
+                preisField .setText("");
+                mengeField .setText("");
+
+                // Tabelle aktualisieren
+                listener.onArtikelAdded(artikel);
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Nummer, Preis und Menge müssen Zahlen sein.",
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 }

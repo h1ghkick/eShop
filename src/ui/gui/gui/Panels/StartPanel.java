@@ -1,137 +1,163 @@
 package ui.gui.gui.Panels;
 
 import domain.EShop;
+import entities.Kunde;
 import exception.LoginException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class StartPanel extends JDialog {
 
-    private final JPanel mainPanel;
-    private final JPanel registerPanel;
-    private boolean registerVisible = false;
+    private final JTextField emailField      = new JTextField(20);
+    private final JPasswordField passwordField = new JPasswordField(20);
 
-    private final JTextField emailField;
-    private final JPasswordField passwordField;
-    private final JTextField nameField;
-    private final JPasswordField confirmPasswordField;
+    private final JPanel registerPanel;
+    private final JTextField vornameField    = new JTextField(20);
+    private final JTextField nachnameField   = new JTextField(20);
+    private final JPasswordField confirmField = new JPasswordField(20);
 
     private final EShop eshop;
     private Object benutzer;
 
     public StartPanel(Frame parent, EShop eshop) {
-        super(parent, "Login", true);
+        super(parent, "Login / Registrierung", true);
         this.eshop = eshop;
 
-        // Layout
-        mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        mainPanel.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        // Haupt-Container mit vertikalem Layout
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // E-Mail
-        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
-        mainPanel.add(new JLabel("E-Mail:"), gbc);
+        // 1) Login-Form
+        JPanel loginForm = new JPanel(new GridLayout(2, 2, 5, 5));
+        loginForm.add(new JLabel("E-Mail:"));
+        loginForm.add(emailField);
+        loginForm.add(new JLabel("Passwort:"));
+        loginForm.add(passwordField);
+        content.add(loginForm);
 
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
-        emailField = new JTextField(20);
-        mainPanel.add(emailField, gbc);
+        // 2) Login-Button
+        JButton loginBtn = new JButton("Login");
+        loginBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        content.add(Box.createVerticalStrut(10));
+        content.add(loginBtn);
 
-        // Passwort
-        gbc.gridx = 0; gbc.gridy++; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
-        mainPanel.add(new JLabel("Passwort:"), gbc);
+        // 3) Toggle für Registrierung
+        JButton toggleBtn = new JButton("Neu registrieren");
+        toggleBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        content.add(Box.createVerticalStrut(10));
+        content.add(toggleBtn);
 
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
-        passwordField = new JPasswordField(20);
-        mainPanel.add(passwordField, gbc);
-
-        // Login
-        gbc.gridx = 0; gbc.gridy++; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
-        JButton loginButton = new JButton("Login");
-        mainPanel.add(loginButton, gbc);
-
-        // Toggle Registrierung
-        gbc.gridy++;
-        JButton registerToggleButton = new JButton("Registrieren");
-        mainPanel.add(registerToggleButton, gbc);
-
-        // Registrieren-Panel
-        registerPanel = new JPanel(new GridBagLayout());
+        // 4) Registrierungs-Panel (anfangs versteckt)
+        registerPanel = new JPanel(new GridLayout(3, 2, 5, 5));
         registerPanel.setBorder(BorderFactory.createTitledBorder("Registrieren"));
+        registerPanel.add(new JLabel("Vorname:"));
+        registerPanel.add(vornameField);
+        registerPanel.add(new JLabel("Nachname:"));
+        registerPanel.add(nachnameField);
+        registerPanel.add(new JLabel("Passwort bestätigen:"));
+        registerPanel.add(confirmField);
         registerPanel.setVisible(false);
-        registerPanel.setBackground(Color.WHITE);
+        content.add(Box.createVerticalStrut(10));
+        content.add(registerPanel);
 
-        GridBagConstraints rbc = new GridBagConstraints();
-        rbc.insets = new Insets(5, 5, 5, 5);
+        // 5) Abschließen-Button
+        JButton registerBtn = new JButton("Registrierung abschließen");
+        registerBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        registerBtn.setVisible(false);
+        content.add(Box.createVerticalStrut(10));
+        content.add(registerBtn);
 
-        // Name
-        rbc.gridx = 0; rbc.gridy = 0; rbc.anchor = GridBagConstraints.EAST;
-        registerPanel.add(new JLabel("Name:"), rbc);
-        rbc.gridx = 1; rbc.fill = GridBagConstraints.HORIZONTAL;
-        nameField = new JTextField(20);
-        registerPanel.add(nameField, rbc);
-
-        // Passwort bestätigen
-        rbc.gridx = 0; rbc.gridy++; rbc.fill = GridBagConstraints.NONE;
-        registerPanel.add(new JLabel("Passwort bestätigen:"), rbc);
-        rbc.gridx = 1; rbc.fill = GridBagConstraints.HORIZONTAL;
-        confirmPasswordField = new JPasswordField(20);
-        registerPanel.add(confirmPasswordField, rbc);
-
-        // Abschließen
-        rbc.gridy++; rbc.gridx = 0; rbc.gridwidth = 2; rbc.anchor = GridBagConstraints.CENTER;
-        JButton registerButton = new JButton("Registrieren abschließen");
-        registerPanel.add(registerButton, rbc);
-
-        gbc.gridy++; gbc.gridwidth = 2;
-        mainPanel.add(registerPanel, gbc);
-
-        // Events
-        loginButton.addActionListener(e -> {
-            String email = emailField.getText().trim();
-            String passwort = new String(passwordField.getPassword()).trim();
-
-            try {
-                benutzer = eshop.einloggen(email, passwort);
-                dispose();
-            } catch (LoginException ex) {
-                JOptionPane.showMessageDialog(this, "Login fehlgeschlagen: " + ex.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        registerToggleButton.addActionListener(e -> {
-            registerVisible = !registerVisible;
-            registerPanel.setVisible(registerVisible);
-            pack();
-        });
-
-        registerButton.addActionListener(e -> {
-            String name = nameField.getText().trim();
-            String email = emailField.getText().trim();
-            String pw1 = new String(passwordField.getPassword()).trim();
-            String pw2 = new String(confirmPasswordField.getPassword()).trim();
-
-            if (name.isEmpty() || email.isEmpty() || pw1.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Bitte alle Felder ausfüllen.", "Fehler", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (!pw1.equals(pw2)) {
-                JOptionPane.showMessageDialog(this, "Passwörter stimmen nicht überein.", "Fehler", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // TODO: Registrierung in EShop
-            JOptionPane.showMessageDialog(this, "Registrierung abgeschlossen! Bitte einloggen.", "Info", JOptionPane.INFORMATION_MESSAGE);
-            registerPanel.setVisible(false);
-            pack();
-        });
-
-        setContentPane(mainPanel);
+        // Dialog einrichten
+        setContentPane(content);
         pack();
         setLocationRelativeTo(parent);
+
+        // --- Event-Handler ---
+
+        // Login
+        loginBtn.addActionListener(e -> {
+            String email = emailField.getText().trim();
+            String pw    = new String(passwordField.getPassword()).trim();
+            try {
+                benutzer = eshop.einloggen(email, pw);
+                dispose();
+            } catch (LoginException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Login fehlgeschlagen: " + ex.getMessage(),
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // Registrierung ein-/ausblenden
+        toggleBtn.addActionListener(e -> {
+            boolean jetztRegistrieren = !registerPanel.isVisible();
+
+            // Registrierungs-Form ein-/ausblenden
+            registerPanel.setVisible(jetztRegistrieren);
+            registerBtn.setVisible(jetztRegistrieren);
+
+            // Login- und Toggle-Button genau entgegengesetzt
+            loginBtn.setVisible(!jetztRegistrieren);
+            toggleBtn.setVisible(!jetztRegistrieren);
+
+            pack();
+        });
+
+        // Registrierung abschließen
+        registerBtn.addActionListener(e -> {
+            String vorname = vornameField.getText().trim();
+            String nachname= nachnameField.getText().trim();
+            String email   = emailField.getText().trim();
+            String pw1     = new String(passwordField.getPassword()).trim();
+            String pw2     = new String(confirmField.getPassword()).trim();
+
+            // nur Vor­/Nachname, E-Mail und Passwort als Pflicht
+            if (vorname.isEmpty() || nachname.isEmpty() || email.isEmpty() || pw1.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Bitte alle Felder ausfüllen.",
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!pw1.equals(pw2)) {
+                JOptionPane.showMessageDialog(this,
+                        "Passwörter stimmen nicht überein.",
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Kunde anlegen & speichern
+            Kunde neu = new Kunde(
+                    vorname, nachname,
+                    email, pw1,
+                    "", "", 0
+            );
+            try {
+                eshop.einfuegenKunden(neu);
+                eshop.speicherOption();
+                JOptionPane.showMessageDialog(this,
+                        "Registrierung abgeschlossen! Bitte einloggen.",
+                        "Info", JOptionPane.INFORMATION_MESSAGE);
+                // Formular zurücksetzen
+                vornameField.setText("");
+                nachnameField.setText("");
+                passwordField.setText("");
+                confirmField.setText("");
+                registerPanel.setVisible(false);
+                registerBtn.setVisible(false);
+
+                // Login- & "Neu registrieren"-Buttons wieder einblenden
+                loginBtn.setVisible(true);
+                toggleBtn.setVisible(true);
+                pack();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Speichern fehlgeschlagen: " + ex.getMessage(),
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     public Object getBenutzer() {

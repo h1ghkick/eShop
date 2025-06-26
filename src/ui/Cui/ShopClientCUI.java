@@ -187,7 +187,7 @@ public class  ShopClientCUI {
           System.out.println("Artikelnummer: ");
           artikelNummer = Integer.parseInt(liesEingabe());
           Artikel artikel = new Artikel(menge, artikelNummer, artikelname, preis, true);
-          eshop.artikelEinfuegen(artikel, menge, email);
+          eshop.artikelEinfuegen(artikel, menge);
           System.out.println("Artikel" + artikelname + " wurde hinzugefügt.");
         }
         case "b" -> {

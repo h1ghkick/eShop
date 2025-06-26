@@ -1,5 +1,6 @@
 package ui.gui;
 
+import Persistence.FilePersistenceManager;
 import domain.EShop;
 import entities.Artikel;
 import entities.Kunde;
@@ -23,6 +24,7 @@ public class ShopClientGUI extends JFrame
         super(titel);
 
         try {
+            FilePersistenceManager fpm = new FilePersistenceManager();
             eshop = new EShop("Kunde.txt", "Artikel.txt", "Mitarbeiter.txt");
 
             // Zeige Login-Dialog
@@ -83,9 +85,19 @@ public class ShopClientGUI extends JFrame
 
     @Override
     public void onArtikelAdded(Artikel artikel) {
+        // 1) Tabelle aktualisieren
         artikelPanel.updateArtikel(eshop.getArtikelBestand());
-    }
 
+        // 2) Änderungen sofort persistieren
+        try {
+            eshop.speicherOption();
+        } catch (IOException e) {
+            // Fehlerbehandlung: dem User Bescheid geben
+            JOptionPane.showMessageDialog(this,
+                    "Fehler beim Speichern der Daten:\n" + e.getMessage(),
+                    "Speicherfehler", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     @Override
     public void onSearchResult(List<Artikel> artikels) {
         artikelPanel.updateArtikel(artikels);

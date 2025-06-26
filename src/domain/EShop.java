@@ -21,6 +21,7 @@ public class EShop {
     private String dateiArtikel = "";
     private String dateiMitarbeiter = "";
 
+    private User aktuellerUser;
 
     public EShop(String dateiKunden, String dateiArtikel, String dateiMitarbeiter) throws IOException {
         kundenVW = new KundenVW();
@@ -45,32 +46,36 @@ public class EShop {
     public User einloggen(String email, String password) throws LoginException {
         for (Kunde k : kundenVW.getAlleKunden()) {
             if (k.getMail().equalsIgnoreCase(email)) {
-                if (k.getPassword().equalsIgnoreCase(password)) {
+                if (k.getPassword().equals(password)) {
+                    this.aktuellerUser = k;      // ← merkt sich den Kunden
                     return k;
                 } else {
                     throw new LoginException(k, "Falsches Passwort.");
                 }
             }
         }
-
         for (Mitarbeiter m : mitarbeiterVW.getAlleMitarbeiter()) {
             if (m.getMail().equalsIgnoreCase(email)) {
-                if (m.getPassword().equalsIgnoreCase(password)) {
+                if (m.getPassword().equals(password)) {
+                    this.aktuellerUser = m;      // ← merkt sich den Mitarbeiter
                     return m;
                 } else {
                     throw new LoginException(m, "Falsches Passwort.");
                 }
             }
         }
-
         throw new LoginException(null, "E-Mail nicht gefunden.");
     }
+
 
 
     public boolean istRegistriert(String email) {
        return kundenVW.istRegistriert(email);
     }
 
+    public User getAktuellerUser() {
+        return aktuellerUser;
+    }
     public void Kaufen(Warenkorb warenkorb,String email) throws WarenkorbIstLeer {
         Map<Artikel, Integer> liste = warenkorb.listeAusgeben();
        if(liste == null || liste.isEmpty()) {
@@ -109,8 +114,10 @@ public class EShop {
         kundenVW.einfuegenKunden(kunde);
     }
 
-    public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail) {
-        artikelVW.artikelEinfuegen(artikel, menge, benutzerEmail);
+    public void artikelEinfuegen(Artikel artikel, int menge) {
+        String email = aktuellerUser.getMail();
+        System.out.println("DEBUG: EShop.artikelEinfuegen von User = " + email);
+        artikelVW.artikelEinfuegen(artikel, menge, email);
     }
 
     public List<Artikel> getArtikelBestand() {

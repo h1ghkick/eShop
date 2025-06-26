@@ -21,8 +21,11 @@ public class Artikel {
         this(artikelAnzahl, artikelNummer, artikelBezeichnung, preis, true);
     }
 
-    public Artikel(int nummerAlsInt, int artikelNummerAlsInt, String titel, int preisAlsInt) {
+    public Artikel(int artikelAnzahl, int artikelNummer, String titel, int preisAlsInt) {
+        // delegiere an den echten Konstruktor mit double
+        this(artikelAnzahl, artikelNummer, titel, (double) preisAlsInt);
     }
+
 
     @Override
     public String toString(){
