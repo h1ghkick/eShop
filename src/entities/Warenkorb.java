@@ -54,7 +54,6 @@ public class Warenkorb {
     }
 
 
-    //Todo: komplette Stückzahl leeren methode
     public String artikelKomplettEntfernen(Artikel artikel) {
         if (artikelListe.containsKey(artikel)) {
             artikelListe.remove(artikel); // entfernt den Artikel aus der Map

@@ -1,4 +1,4 @@
-package ui.cui.gui.Panels;
+package ui.gui.gui.Panels;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,7 +83,6 @@ public class SearchArtikelPanel extends JPanel {
                     suchErgebnis = (List<Artikel>) shop.artikelDa(suchbegriff);
                     searchTextField.setText("");
                 }
-
                 // Listener benachrichtigen, damit er die Ausgabe aktualisieren kann
                 searchListener.onSearchResult(suchErgebnis);
             }
