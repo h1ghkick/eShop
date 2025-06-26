@@ -1,15 +1,9 @@
-package ui.cui.gui.Panels;
+package ui.cui;
 
 import entities.Artikel;
 import domain.EShop;
 
-import ui.cui.gui.Panels.ArtikelTablePanel;
-import ui.cui.gui.Panels.ArtikelListPanel;
-import ui.cui.gui.Panels.AddArtikelPanel;
-import ui.cui.gui.Panels.SearchArtikelPanel;
-
-
-
+import ui.cui.gui.Panels.*;
 
 
 import javax.swing.*;
