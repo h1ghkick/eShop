@@ -46,8 +46,8 @@ public class ArtikelVW {
     }
 
     // Artikel ins Lager einfügen (neu oder Bestand erhöhen)
-    public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail) {
-        for (Artikel a : artikelBestand) {
+    public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail){
+         for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
                 a.setArtikelAnzahl(a.getArtikelAnzahl() + menge);
                 logEreignis(a, menge, "Einlagerung", benutzerEmail);

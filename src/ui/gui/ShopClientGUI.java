@@ -1,147 +1,97 @@
 package ui.gui;
 
-import entities.Artikel;
 import domain.EShop;
-
+import entities.Artikel;
+import entities.Kunde;
+import entities.Mitarbeiter;
 import ui.gui.gui.Panels.*;
-
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-
-/**
- * Alternative Version der Bibliotheks-GUI, bei der die im Layout vorgesehenen Bereich für das
- * - Hinzufügen neuer Bücher,
- * - Suchen nach Büchern und
- * - Ausgeben von Büchern
- * nicht mehr innerhalb dieser Klasse definiert werden, sondern in Klassen im Unterpaket "panels".
- * Jede der genannten Aufgaben wird dort in einer Unterklasse von Panel implementiert;
- * hier werden nur noch Objekte der Unterklassen erzeugt und in das Layout des Frames eingefügt.
- * Die Kommunikation zwischen den Panels und dem (zentralen) Frame erfolgt dabei über Interfaces,
- * die in den Panel-Unterklassen definiert und in der Frame-Unterklasse implementiert werden.
- *
- * @author thorsten
- *
- */
+import java.util.List;
 
 public class ShopClientGUI extends JFrame
         implements SearchArtikelPanel.SearchResultListener, AddArtikelPanel.AddArtikelListener {
 
-    private JPanel contentPanel;
-    private StartPanel startPanel;
-    private JPanel mitarbeiterPanel;
-    private JPanel kundenPanel;
-
     private EShop eshop;
-
     private SearchArtikelPanel searchPanel;
     private AddArtikelPanel addPanel;
-    //	private BooksListPanel booksPanel;
     private ArtikelTablePanel artikelPanel;
-    private StartPanel startPanel;
 
     public ShopClientGUI(String titel) {
         super(titel);
 
         try {
-            eshop = new EShop("Kunde.txt","Artikel.txt", "Mitarbeiter.txt");
-            initialize();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+            eshop = new EShop("Kunde.txt", "Artikel.txt", "Mitarbeiter.txt");
 
-    private void initialize() {
+            // Zeige Login-Dialog
+            StartPanel loginDialog = new StartPanel(this, eshop);
+            loginDialog.setVisible(true);
 
-        // Menü definieren
-        JMenuBar menuBar = new ShopMenueBar(eshop);
-        setJMenuBar(menuBar);
+            Object benutzer = loginDialog.getBenutzer();
 
-        // Klick auf Kreuz / roten Kreis (Fenster schließen) behandeln lassen:
-        // A) Mittels Default Close Operation
-//		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        // B) Mittels WindowAdapter (für Sicherheitsabfrage)
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new WindowClosingListener());
-
-        // Layout des Frames: BorderLayout
-        this.setLayout(new BorderLayout());
-
-        // North
-        searchPanel = new SearchArtikelPanel(eshop, this);
-
-        // West
-        addPanel = new AddArtikelPanel(eshop, this);
-
-        // Center
-        java.util.List<Artikel> artikel = eshop.getArtikelBestand();
-        // (wahlweise Anzeige als Liste oder Tabelle)
-//		booksPanel = new BooksListPanel(buecher);
-        artikelPanel = new ArtikelTablePanel(artikel);
-        JScrollPane scrollPane = new JScrollPane(artikelPanel);
-
-        // "Zusammenbau" in BorderLayout des Frames
-        this.add(searchPanel, BorderLayout.NORTH);
-        this.add(addPanel, BorderLayout.WEST);
-        this.add(scrollPane, BorderLayout.CENTER);
-
-        this.setSize(640, 480);
-        this.setVisible(true);
-    }
-
-    public void initializeStartPanel() {
-        startPanel = new StartPanel(e -> handleLogin(e.getActionCommand()));
-    }
-
-    public void handleLogin(String role) {
-        try {
-            if(role.equals("Kunde")){
-                buildKundenUI();
-                showPanel("KUNDENMENÜ");
+            if (benutzer == null) {
+                System.exit(0); // Wenn Fenster geschlossen oder Login fehlgeschlagen
             }
+
+            // GUI je nach Rolle starten
+            if (benutzer instanceof Kunde) {
+                initializeKundenUI();
+            } else if (benutzer instanceof Mitarbeiter) {
+                initializeMitarbeiterUI();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Fehler beim Laden der Daten.", "Fehler", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * Listener, der Benachrichtungen erhält, wenn im AddBookPanel ein Buch eingefügt wurde.
-     * (Als Reaktion soll die Bücherliste aktualisiert werden.)
-     * @see bib.local.ui.gui.panels.AddBookPanel.AddBookListener#onBookAdded(bib.local.entities.Buch)
-     */
+    private void initializeKundenUI() {
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        searchPanel = new SearchArtikelPanel(eshop, this);
+        List<Artikel> artikel = eshop.getArtikelBestand();
+        artikelPanel = new ArtikelTablePanel(artikel);
+
+        add(searchPanel, BorderLayout.NORTH);
+        add(new JScrollPane(artikelPanel), BorderLayout.CENTER);
+
+        setSize(640, 480);
+        setVisible(true);
+    }
+
+    private void initializeMitarbeiterUI() {
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        searchPanel = new SearchArtikelPanel(eshop, this);
+        addPanel = new AddArtikelPanel(eshop, this);
+        List<Artikel> artikel = eshop.getArtikelBestand();
+        artikelPanel = new ArtikelTablePanel(artikel);
+
+        add(searchPanel, BorderLayout.NORTH);
+        add(addPanel, BorderLayout.WEST);
+        add(new JScrollPane(artikelPanel), BorderLayout.CENTER);
+
+        setSize(800, 500);
+        setVisible(true);
+    }
+
     @Override
     public void onArtikelAdded(Artikel artikel) {
-        // Ich lade hier einfach alle Bücher neu und lasse sie anzeigen
-        java.util.List<Artikel> artikels = eshop.getArtikelBestand();
-        artikelPanel.updateArtikel(artikels);
+        artikelPanel.updateArtikel(eshop.getArtikelBestand());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * Listener, der Benachrichtungen erhält, wenn das SearchBooksPanel ein Suchergebnis bereitstellen möchte.
-     * (Als Reaktion soll die Bücherliste aktualisiert werden.)
-     * @see bib.local.ui.gui.swing.panels.SearchBooksPanel.SearchResultListener#onSearchResult(java.util.List)
-     */
     @Override
-    public void onSearchResult(java.util.List<Artikel> artikels) {
+    public void onSearchResult(List<Artikel> artikels) {
         artikelPanel.updateArtikel(artikels);
     }
-
 
     public static void main(String[] args) {
-        // Start der Anwendung (per anonymer Klasse)
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                ShopClientGUI gui = new ShopClientGUI("ESHOP");
-            }
-        });
-
-//		// Start der Anwendung (per Lambda-Expression)
-//		SwingUtilities.invokeLater(() -> { BibGuiMitKomponenten gui = new BibGuiMitKomponenten("Bibliothek"); });
+        SwingUtilities.invokeLater(() -> new ShopClientGUI("ESHOP")); // LAMBDA EXPRESSION
     }
 }

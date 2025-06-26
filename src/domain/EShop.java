@@ -97,7 +97,6 @@ public class EShop {
     }
 
     public Artikel artikelDa(String artikelBezeichnung) {
-
         return artikelVW.artikelDa(artikelBezeichnung);
     }
 
