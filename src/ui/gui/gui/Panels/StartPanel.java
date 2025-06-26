@@ -8,148 +8,96 @@ import java.awt.*;
 
 public class StartPanel extends JDialog {
 
-    private JPanel mainPanel;
-    private JPanel registerPanel;
+    private final JPanel mainPanel;
+    private final JPanel registerPanel;
     private boolean registerVisible = false;
 
-    private JButton loginButton;
-    private JButton registerToggleButton;
-    private JButton registerButton;
+    private final JTextField emailField;
+    private final JPasswordField passwordField;
+    private final JTextField nameField;
+    private final JPasswordField confirmPasswordField;
 
-    private JTextField emailField;
-    private JPasswordField passwordField;
-    private JTextField nameField;
-    private JPasswordField confirmPasswordField;
+    private final EShop eshop;
+    private Object benutzer;
 
-    private EShop eshop;
-    private String rolle;
+    public StartPanel(Frame parent, EShop eshop) {
+        super(parent, "Login", true);
+        this.eshop = eshop;
 
-    public StartPanel(Frame parent) {
-        super(parent, "Login", true); // Modal
-        eshop = new EShop(); // ggf. Konstruktor mit Dateinamen verwenden
-        setupUI();
-        setupEvent();
-    }
-
-    public String getRolle() {
-        return rolle;
-    }
-
-    public void setupUI() {
+        // Layout
         mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(Color.WHITE);
-
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.EAST;
+        // E-Mail
+        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
         mainPanel.add(new JLabel("E-Mail:"), gbc);
 
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        emailField = new JTextField();
-        emailField.setPreferredSize(new Dimension(250, 35));
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
+        emailField = new JTextField(20);
         mainPanel.add(emailField, gbc);
 
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
+        // Passwort
+        gbc.gridx = 0; gbc.gridy++; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
         mainPanel.add(new JLabel("Passwort:"), gbc);
 
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        passwordField = new JPasswordField();
-        passwordField.setPreferredSize(new Dimension(250, 35));
+        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
+        passwordField = new JPasswordField(20);
         mainPanel.add(passwordField, gbc);
 
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        loginButton = new JButton("Login");
-        loginButton.setPreferredSize(new Dimension(250, 40));
+        // Login
+        gbc.gridx = 0; gbc.gridy++; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
+        JButton loginButton = new JButton("Login");
         mainPanel.add(loginButton, gbc);
 
-
+        // Toggle Registrierung
         gbc.gridy++;
-        registerToggleButton = new JButton("Registrieren");
-        registerToggleButton.setPreferredSize(new Dimension(250, 40));
+        JButton registerToggleButton = new JButton("Registrieren");
         mainPanel.add(registerToggleButton, gbc);
 
-
+        // Registrieren-Panel
         registerPanel = new JPanel(new GridBagLayout());
         registerPanel.setBorder(BorderFactory.createTitledBorder("Registrieren"));
         registerPanel.setVisible(false);
         registerPanel.setBackground(Color.WHITE);
+
         GridBagConstraints rbc = new GridBagConstraints();
         rbc.insets = new Insets(5, 5, 5, 5);
 
         // Name
-        rbc.gridx = 0;
-        rbc.gridy = 0;
-        rbc.anchor = GridBagConstraints.EAST;
+        rbc.gridx = 0; rbc.gridy = 0; rbc.anchor = GridBagConstraints.EAST;
         registerPanel.add(new JLabel("Name:"), rbc);
-
-        rbc.gridx = 1;
-        rbc.fill = GridBagConstraints.HORIZONTAL;
-        rbc.weightx = 1.0;
-        nameField = new JTextField();
-        nameField.setPreferredSize(new Dimension(250, 30));
+        rbc.gridx = 1; rbc.fill = GridBagConstraints.HORIZONTAL;
+        nameField = new JTextField(20);
         registerPanel.add(nameField, rbc);
 
         // Passwort bestätigen
-        rbc.gridx = 0;
-        rbc.gridy++;
-        rbc.weightx = 0;
-        rbc.fill = GridBagConstraints.NONE;
+        rbc.gridx = 0; rbc.gridy++; rbc.fill = GridBagConstraints.NONE;
         registerPanel.add(new JLabel("Passwort bestätigen:"), rbc);
-
-        rbc.gridx = 1;
-        rbc.fill = GridBagConstraints.HORIZONTAL;
-        rbc.weightx = 1.0;
-        confirmPasswordField = new JPasswordField();
-        confirmPasswordField.setPreferredSize(new Dimension(250, 30));
+        rbc.gridx = 1; rbc.fill = GridBagConstraints.HORIZONTAL;
+        confirmPasswordField = new JPasswordField(20);
         registerPanel.add(confirmPasswordField, rbc);
 
-        // Registrieren abschließen
-        rbc.gridy++;
-        rbc.gridx = 0;
-        rbc.gridwidth = 2;
-        rbc.anchor = GridBagConstraints.CENTER;
-        registerButton = new JButton("Registrieren abschließen");
-        registerButton.setPreferredSize(new Dimension(250, 40));
+        // Abschließen
+        rbc.gridy++; rbc.gridx = 0; rbc.gridwidth = 2; rbc.anchor = GridBagConstraints.CENTER;
+        JButton registerButton = new JButton("Registrieren abschließen");
         registerPanel.add(registerButton, rbc);
 
-        gbc.gridy++;
-        gbc.gridwidth = 2;
+        gbc.gridy++; gbc.gridwidth = 2;
         mainPanel.add(registerPanel, gbc);
 
-        setContentPane(mainPanel);
-        getContentPane().setBackground(Color.WHITE);
-        pack();
-        setLocationRelativeTo(getParent());
-    }
-
-    public void setupEvent() {
+        // Events
         loginButton.addActionListener(e -> {
             String email = emailField.getText().trim();
             String passwort = new String(passwordField.getPassword()).trim();
 
             try {
-                rolle = eshop.einloggen(email, passwort);
+                benutzer = eshop.einloggen(email, passwort);
                 dispose();
             } catch (LoginException ex) {
-                JOptionPane.showMessageDialog(this, "Login fehlgeschlagen: " + ex.getMessage(),
-                        "Fehler", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Login fehlgeschlagen: " + ex.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -160,9 +108,33 @@ public class StartPanel extends JDialog {
         });
 
         registerButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Registrierung abgeschlossen!", "Info", JOptionPane.INFORMATION_MESSAGE);
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
+            String pw1 = new String(passwordField.getPassword()).trim();
+            String pw2 = new String(confirmPasswordField.getPassword()).trim();
+
+            if (name.isEmpty() || email.isEmpty() || pw1.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Bitte alle Felder ausfüllen.", "Fehler", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!pw1.equals(pw2)) {
+                JOptionPane.showMessageDialog(this, "Passwörter stimmen nicht überein.", "Fehler", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // TODO: Registrierung in EShop
+            JOptionPane.showMessageDialog(this, "Registrierung abgeschlossen! Bitte einloggen.", "Info", JOptionPane.INFORMATION_MESSAGE);
             registerPanel.setVisible(false);
             pack();
         });
+
+        setContentPane(mainPanel);
+        pack();
+        setLocationRelativeTo(parent);
+    }
+
+    public Object getBenutzer() {
+        return benutzer;
     }
 }
