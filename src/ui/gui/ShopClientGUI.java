@@ -1,9 +1,9 @@
-package ui.cui;
+package ui.gui;
 
 import entities.Artikel;
 import domain.EShop;
 
-import ui.cui.gui.Panels.*;
+import ui.gui.gui.Panels.*;
 
 
 import javax.swing.*;
@@ -24,8 +24,14 @@ import java.io.IOException;
  * @author thorsten
  *
  */
+
 public class ShopClientGUI extends JFrame
-        implements SearchArtikelPanel.SearchResultListener, AddArtikelPanel.AddBookListener {
+        implements SearchArtikelPanel.SearchResultListener, AddArtikelPanel.AddArtikelListener {
+
+    private JPanel contentPanel;
+    private StartPanel startPanel;
+    private JPanel mitarbeiterPanel;
+    private JPanel kundenPanel;
 
     private EShop eshop;
 
@@ -33,6 +39,7 @@ public class ShopClientGUI extends JFrame
     private AddArtikelPanel addPanel;
     //	private BooksListPanel booksPanel;
     private ArtikelTablePanel artikelPanel;
+    private StartPanel startPanel;
 
     public ShopClientGUI(String titel) {
         super(titel);
@@ -69,10 +76,10 @@ public class ShopClientGUI extends JFrame
         addPanel = new AddArtikelPanel(eshop, this);
 
         // Center
-        java.util.List<Artikel> buecher = eshop.getArtikelBestand();
+        java.util.List<Artikel> artikel = eshop.getArtikelBestand();
         // (wahlweise Anzeige als Liste oder Tabelle)
 //		booksPanel = new BooksListPanel(buecher);
-        artikelPanel = new ArtikelTablePanel(buecher);
+        artikelPanel = new ArtikelTablePanel(artikel);
         JScrollPane scrollPane = new JScrollPane(artikelPanel);
 
         // "Zusammenbau" in BorderLayout des Frames
@@ -82,6 +89,19 @@ public class ShopClientGUI extends JFrame
 
         this.setSize(640, 480);
         this.setVisible(true);
+    }
+
+    public void initializeStartPanel() {
+        startPanel = new StartPanel(e -> handleLogin(e.getActionCommand()));
+    }
+
+    public void handleLogin(String role) {
+        try {
+            if(role.equals("Kunde")){
+                buildKundenUI();
+                showPanel("KUNDENMENÜ");
+            }
+        }
     }
 
     /*
@@ -114,6 +134,7 @@ public class ShopClientGUI extends JFrame
     public static void main(String[] args) {
         // Start der Anwendung (per anonymer Klasse)
         SwingUtilities.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 ShopClientGUI gui = new ShopClientGUI("ESHOP");

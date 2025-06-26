@@ -1,7 +1,7 @@
-package ui.cui.gui.Panels;
+package ui.gui.gui.Panels;
 
 import entities.Artikel;
-import ui.cui.models.ArtikelTabelModel;
+import ui.gui.models.ArtikelTabelModel;
 
 import javax.swing.*;
 import java.util.List;

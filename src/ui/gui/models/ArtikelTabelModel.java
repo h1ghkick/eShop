@@ -1,16 +1,15 @@
-package ui.cui.models;
+package ui.gui.models;
 
 import entities.Artikel;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ArtikelTabelModel extends AbstractTableModel {
 
     private List<Artikel> artikel;
-    private String[] spaltenNamen = { "Nummer","Titel", "verfügbar" };
+    private String[] spaltenNamen = { "Nummer","Titel", "Preis" };
 
     public ArtikelTabelModel(List<Artikel> aktuelleArtikel) {
         super();
@@ -59,7 +58,7 @@ public class ArtikelTabelModel extends AbstractTableModel {
         return switch (col) {
             case 0 -> gewaehlterArtikel.getArtikelNummer();
             case 1 -> gewaehlterArtikel.getArtikelBezeichnung();
-            case 2 -> gewaehlterArtikel.getArtikelVerfuegbar();
+            case 2 -> gewaehlterArtikel.getPreis();
             default -> null;
         };
     }

@@ -1,4 +1,4 @@
-package ui.cui.gui.Panels;
+package ui.gui.gui.Panels;
 
 import javax.swing.*;
 import entities.Artikel;
@@ -10,22 +10,21 @@ import java.awt.event.ActionListener;
 
 
 public class AddArtikelPanel extends JPanel {
-    public interface AddBookListener {
+    public interface AddArtikelListener {
         void onArtikelAdded(Artikel artikel);
     }
 
     private EShop eshop = null;
-    private AddBookListener addListener = null;
+    private AddArtikelListener addListener = null;
 
     private JButton addButton;
-    private JTextField numberTextField = null;
     private JTextField titleTextField = null;
     private JTextField artikelNummerTextField = null;
     private JTextField artikelpreisTextField = null;
     private JTextField artikelMengeTextField = null;
     private JTextField benutzerEmailTextField = null;
 
-    public AddArtikelPanel(EShop eshop, AddBookListener addListener) {
+    public AddArtikelPanel(EShop eshop, AddArtikelListener addListener) {
         this.eshop = eshop;
         this.addListener = addListener;
 
@@ -45,9 +44,6 @@ public class AddArtikelPanel extends JPanel {
         this.add(new Box.Filler(borderMinSize, borderPrefSize, borderMaxSize));
 
         // Eingabefelder
-        this.add(new JLabel("Nummer: "));
-        numberTextField = new JTextField();
-        this.add(numberTextField);
         this.add(new JLabel("Titel: "));
         titleTextField = new JTextField();
         this.add(titleTextField);
@@ -97,25 +93,23 @@ public class AddArtikelPanel extends JPanel {
     }
 
     private void onAddButtonClick() {
-        String nummer = numberTextField.getText();
         String titel = titleTextField.getText();
-        String artikelNummer = numberTextField.getText();
+        String artikelNummer = artikelNummerTextField.getText();
         String artikelpreis = artikelpreisTextField.getText();
         String artikelMenge = artikelMengeTextField.getText();
         String benutzerEmail = benutzerEmailTextField.getText();
 
 
-        if (!nummer.isEmpty() && !titel.isEmpty()) {
+        if (!artikelMenge.isEmpty() && !titel.isEmpty()) {
             try {
-                int nummerAlsInt = Integer.parseInt(nummer);
+                int nummerAlsInt = Integer.parseInt(artikelMenge);
                 int preisAlsInt = Integer.parseInt(artikelpreis);
                 int artikelNummerAlsInt = Integer.parseInt(artikelNummer);
 
                 Artikel artikel = new Artikel(nummerAlsInt, artikelNummerAlsInt, titel, preisAlsInt);
                 eshop.artikelEinfuegen(artikel, Integer.parseInt(artikelMenge), benutzerEmail);
-                numberTextField.setText("");
-                titleTextField.setText("");
                 artikelNummerTextField.setText("");
+                titleTextField.setText("");
                 artikelpreisTextField.setText("");
 
                 // Am Ende Listener, d.h. unseren Frame benachrichtigen:
