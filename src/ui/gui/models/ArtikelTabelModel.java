@@ -62,5 +62,10 @@ public class ArtikelTabelModel extends AbstractTableModel {
             default -> null;
         };
     }
+
+    /** Liefert das Artikel-Objekt in der gegebenen Zeile */
+    public Artikel getArtikelAt(int row) {
+        return artikel.get(row);
+    }
 }
 
