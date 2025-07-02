@@ -59,17 +59,12 @@ public class WarenkorbPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = table.getSelectedRow();
-                if (row >= 0) {
-                    // Artikel aus Domain entfernen
-                    Artikel art = (Artikel) model.getValueAt(row, 1); // Titel-Spalte zum Vergleich
-                    int menge = (int) model.getValueAt(row, 2);
-                    eshop.getWarenkorb().artikelEntfernen(art, menge);
+                System.out.println("text"+ row);
 
                     // Model aktualisieren
                     model.removeRow(row);
                     updateTotal();
                 }
-            }
         });
 
         buyButton.addActionListener(new ActionListener() {
