@@ -151,13 +151,26 @@ public class ShopClientGUI extends JFrame
         List<Artikel> artikel = eshop.getArtikelBestand();
         artikelPanel = new ArtikelTablePanel(artikel);
 
-        add(searchPanel, BorderLayout.NORTH);
+        // Neues Panel für oben
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(searchPanel, BorderLayout.NORTH);
+
+        // Button erstellen
+        JButton createEmployeeBtn = new JButton("Mitarbeiter:in anlegen");
+        topPanel.add(createEmployeeBtn, BorderLayout.SOUTH);
+
+        // Action Listener
+        createEmployeeBtn.addActionListener(e -> openCreateEmployeeDialog());
+
+        // Statt searchPanel jetzt topPanel einfügen
+        add(topPanel, BorderLayout.NORTH);
         add(addPanel, BorderLayout.WEST);
         add(new JScrollPane(artikelPanel), BorderLayout.CENTER);
 
         setSize(800, 500);
         setVisible(true);
     }
+
 
     // ---------------- Interface‐Methoden ----------------
 
@@ -177,6 +190,11 @@ public class ShopClientGUI extends JFrame
     public void onSearchResult(List<Artikel> artikels) {
         artikelPanel.updateArtikel(artikels);
     }
+
+    private void openCreateEmployeeDialog() {
+        new EinfuegenMitarbeiterDialog(this, eshop).setVisible(true);
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ShopClientGUI("ESHOP"));

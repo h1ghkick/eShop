@@ -105,6 +105,9 @@ public class EShop {
         return artikelVW.artikelDa(artikelBezeichnung);
     }
 
+    public List<Artikel> sucheArtikel(String artikelBezeichnung) {
+        return artikelVW.sucheArtikel(artikelBezeichnung);
+    }
 
     public void einfuegenMitarbeiter(Mitarbeiter mitarbeiter) {
         mitarbeiterVW.einfuegenMitarbeiter(mitarbeiter);

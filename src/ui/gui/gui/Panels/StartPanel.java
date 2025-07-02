@@ -45,7 +45,7 @@ public class StartPanel extends JDialog {
         content.add(loginBtn);
 
         // 3) Toggle für Registrierung
-        JButton toggleBtn = new JButton("Neu registrieren");
+        JButton toggleBtn = new JButton("Neu Registrieren");
         toggleBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         content.add(Box.createVerticalStrut(10));
         content.add(toggleBtn);

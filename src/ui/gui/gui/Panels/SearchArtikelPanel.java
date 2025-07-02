@@ -22,13 +22,13 @@ public class SearchArtikelPanel extends JPanel {
     private JButton searchButton = null;
 
     public SearchArtikelPanel(EShop eShop, SearchResultListener listener) {
-        shop = new EShop();
+        shop = eShop;
         searchListener = listener;
 
         setupUI();
-
         setupEvents();
     }
+
 
     private void setupUI() {
         // GridBagLayout
@@ -80,7 +80,7 @@ public class SearchArtikelPanel extends JPanel {
                 if (suchbegriff.isEmpty()) {
                     suchErgebnis = shop.getArtikelBestand();
                 } else {
-                    suchErgebnis = (List<Artikel>) shop.artikelDa(suchbegriff);
+                    suchErgebnis = (List<Artikel>) shop.sucheArtikel(suchbegriff);
                     searchTextField.setText("");
                 }
                 // Listener benachrichtigen, damit er die Ausgabe aktualisieren kann

@@ -9,7 +9,7 @@ import java.util.List;
 public class ArtikelTabelModel extends AbstractTableModel {
 
     private List<Artikel> artikel;
-    private String[] spaltenNamen = { "Nummer","Titel", "Preis" };
+    private String[] spaltenNamen = { "Nummer","Titel", "Preis", "Menge" };
 
     public ArtikelTabelModel(List<Artikel> aktuelleArtikel) {
         super();
@@ -52,6 +52,7 @@ public class ArtikelTabelModel extends AbstractTableModel {
         return spaltenNamen[col];
     }
 
+
     @Override
     public Object getValueAt(int row, int col) {
         Artikel gewaehlterArtikel = artikel.get(row);
@@ -59,6 +60,7 @@ public class ArtikelTabelModel extends AbstractTableModel {
             case 0 -> gewaehlterArtikel.getArtikelNummer();
             case 1 -> gewaehlterArtikel.getArtikelBezeichnung();
             case 2 -> gewaehlterArtikel.getPreis();
+            case 3 -> gewaehlterArtikel.getArtikelAnzahl();
             default -> null;
         };
     }
