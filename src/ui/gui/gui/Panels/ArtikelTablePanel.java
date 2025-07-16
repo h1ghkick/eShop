@@ -20,7 +20,7 @@ public class ArtikelTablePanel extends JTable {
 
     public void updateArtikel(List<Artikel> artikel) {
         // Sortierung nach ArtikelAnzahl
-        artikel.sort((b1, b2) -> b1.getArtikelAnzahl() - b2.getArtikelAnzahl());
+        artikel.sort((b1, b2) -> b1.getArtikelBezeichnung().compareTo(b2.getArtikelBezeichnung()));
 
         ArtikelTabelModel tableModel = (ArtikelTabelModel) getModel();
         tableModel.setArtikel(artikel);
