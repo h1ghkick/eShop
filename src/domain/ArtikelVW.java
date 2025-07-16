@@ -90,6 +90,18 @@ public class ArtikelVW {
         }
         return null;
     }
+    public List<Artikel> sucheArtikel(String suchbegriff) {
+        List<Artikel> treffer = new ArrayList<>();
+
+        for (Artikel artikel : artikelBestand) {
+            if (artikel.getArtikelBezeichnung().toLowerCase().contains(suchbegriff.toLowerCase())) {
+                treffer.add(artikel);
+            }
+        }
+
+        return treffer;
+    }
+
     public List<Artikel> getAlleArtikel() {
         return artikelBestand;
     }

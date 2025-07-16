@@ -19,14 +19,12 @@ public class ArtikelTablePanel extends JTable {
     }
 
     public void updateArtikel(List<Artikel> artikel) {
-        // Sortierung (mit Lambda-Expression)
+        // Sortierung nach ArtikelAnzahl
+        artikel.sort((b1, b2) -> b1.getArtikelBezeichnung().compareTo(b2.getArtikelBezeichnung()));
 
-        artikel.sort((b1, b2) -> b1.getArtikelAnzahl() - b2.getArtikelAnzahl());	// Sortierung nach Nummer
-		// artikel.sort((b1, b2) -> b1.getArtikelBezeichnung().compareTo(b2.getArtikelBezeichnung()));	// Sortierung nach Titel
-
-        // TableModel von JTable holen und ...
         ArtikelTabelModel tableModel = (ArtikelTabelModel) getModel();
-//		// ... Inhalt aktualisieren
         tableModel.setArtikel(artikel);
+        tableModel.fireTableDataChanged();
     }
+
 }

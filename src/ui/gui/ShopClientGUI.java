@@ -29,7 +29,6 @@ public class ShopClientGUI extends JFrame
         try {
             new FilePersistenceManager(); // nicht weiter genutzt
             eshop = new EShop("Kunde.txt", "Artikel.txt", "Mitarbeiter.txt");
-
             StartPanel loginDialog = new StartPanel(this, eshop);
             loginDialog.setVisible(true);
             Object benutzer = loginDialog.getBenutzer();
@@ -62,7 +61,7 @@ public class ShopClientGUI extends JFrame
     }
 
     private void setupMainFrame() {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new WindowClosingListener());
         setLayout(new BorderLayout());
         setSize(640, 480);
     }
@@ -113,8 +112,7 @@ public class ShopClientGUI extends JFrame
             int menge = Integer.parseInt(mengeField.getText().trim());
             if (menge <= 0) throw new NumberFormatException();
 
-            Artikel art = ((ui.gui.models.ArtikelTabelModel) artikelPanel.getModel())
-                    .getArtikelAt(row);
+            Artikel art = ((ui.gui.models.ArtikelTabelModel) artikelPanel.getModel()).getArtikelAt(row);
 
             eshop.artikelHinzufuegen(art, menge);
             JOptionPane.showMessageDialog(this,
@@ -151,13 +149,26 @@ public class ShopClientGUI extends JFrame
         List<Artikel> artikel = eshop.getArtikelBestand();
         artikelPanel = new ArtikelTablePanel(artikel);
 
-        add(searchPanel, BorderLayout.NORTH);
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(searchPanel, BorderLayout.NORTH);
+
+
+        JButton createEmployeeBtn = new JButton("Mitarbeiter:in anlegen");
+        topPanel.add(createEmployeeBtn, BorderLayout.SOUTH);
+
+
+        createEmployeeBtn.addActionListener(e -> openCreateEmployeeDialog());
+
+        // Statt searchPanel jetzt topPanel einfügen
+        add(topPanel, BorderLayout.NORTH);
         add(addPanel, BorderLayout.WEST);
         add(new JScrollPane(artikelPanel), BorderLayout.CENTER);
 
         setSize(800, 500);
         setVisible(true);
     }
+
 
     // ---------------- Interface‐Methoden ----------------
 
@@ -177,6 +188,11 @@ public class ShopClientGUI extends JFrame
     public void onSearchResult(List<Artikel> artikels) {
         artikelPanel.updateArtikel(artikels);
     }
+
+    private void openCreateEmployeeDialog() {
+        new EinfuegenMitarbeiterDialog(this, eshop).setVisible(true);
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ShopClientGUI("ESHOP"));
