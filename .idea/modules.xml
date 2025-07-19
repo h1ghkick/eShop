@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/eShop.iml" filepath="$PROJECT_DIR$/eShop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eShopClient/eShopClient.iml" filepath="$PROJECT_DIR$/eShopClient/eShopClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eShopCommon/eShopCommon.iml" filepath="$PROJECT_DIR$/eShopCommon/eShopCommon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eShopServer/eShopServer.iml" filepath="$PROJECT_DIR$/eShopServer/eShopServer.iml" />
     </modules>
   </component>
 </project>
