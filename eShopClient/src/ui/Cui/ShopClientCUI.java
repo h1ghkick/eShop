@@ -242,7 +242,7 @@ public class  ShopClientCUI {
         artikelName = liesEingabe();
         System.out.println("Menge: ");
         menge = Integer.parseInt(liesEingabe());
-        eshop.artikelHinzufuegen(eshop.artikelDa(artikelName), menge);
+       // eshop.artikelHinzufuegen(eshop.artikelDa(artikelName), menge);
       }
       case "c" -> {
         System.out.println(eshop.listeAusgeben());

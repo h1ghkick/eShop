@@ -21,10 +21,6 @@ public class Warenkorb implements Serializable {
         artikelListe.put(artikel, aktuelleMenge + menge);
     }
 
-    //Warenkorb komplett Leeren
-    public void warenkorbLeeren() {
-        artikelListe.clear();
-    }
 
     //Liste ausgeben
     public Map<Artikel, Integer> listeAusgeben() {
@@ -60,7 +56,18 @@ public class Warenkorb implements Serializable {
         return "";
     }
 
+    public void entferneArtikel(Artikel artikel) {
+        artikelListe.remove(artikel); // oder wie du die Map nennst
+    }
+
+
+    public void warenkorbLeeren() {
+        artikelListe.clear();
+    }
+
+
 }
+
 
 
 

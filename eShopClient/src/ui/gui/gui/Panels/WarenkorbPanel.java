@@ -2,6 +2,7 @@ package ui.gui.gui.Panels;
 
 import entities.EShopRemote;
 import entities.Artikel;
+import entities.Rechnung;
 import ui.gui.models.WarenkorbTableModel;
 
 import javax.swing.*;
@@ -60,40 +61,41 @@ public class WarenkorbPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = table.getSelectedRow();
-                System.out.println("text"+ row);
-
-                    // Model aktualisieren
-                    model.removeRow(row);
-                try {
-                    updateTotal();
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+                if (row >= 0) {
+                    try {
+                        Artikel artikel = model.getArtikelAt(row);
+                        eshop.entferneArtikelAusWarenkorb(artikel); // ✅ richtig: Remote-Methode aufrufen
+                        model.removeRow(row);
+                        updateTotal();
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
 
-        buyButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    // Kauf auslösen
-                    String email = eshop.getAktuellerUser().getMail();
-                    eshop.Kaufen(eshop.getWarenkorb(), email);
 
-                    JOptionPane.showMessageDialog(WarenkorbPanel.this,
-                            "Danke für Ihren Einkauf!",
-                            "Erfolg", JOptionPane.INFORMATION_MESSAGE);
+        buyButton.addActionListener(e -> {
+            try {
+                String email = eshop.getAktuellerUser().getMail();
+                Rechnung rechnung = eshop.Kaufen(eshop.getWarenkorb(), email);
 
-                    // Leeren
-                    model.removeAllRows();
-                    updateTotal();
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(WarenkorbPanel.this,
-                            "Fehler beim Kaufen: " + ex.getMessage(),
-                            "Fehler", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(WarenkorbPanel.this, "Danke für Ihren Einkauf!", "Erfolg", JOptionPane.INFORMATION_MESSAGE);
+
+                Window parent = SwingUtilities.getWindowAncestor(WarenkorbPanel.this);
+                JDialog dlg = new JDialog(parent, "Ihre Rechnung", Dialog.ModalityType.APPLICATION_MODAL);
+                dlg.getContentPane().add(new RechnungPanel(rechnung));
+                dlg.pack();
+                dlg.setLocationRelativeTo(WarenkorbPanel.this);
+                dlg.setVisible(true);
+
+                model.removeAllRows();
+                updateTotal();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(WarenkorbPanel.this, "Fehler beim Kaufen: " + ex.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
             }
         });
+
     }
 
     private void updateTotal() throws RemoteException {
@@ -102,4 +104,6 @@ public class WarenkorbPanel extends JPanel {
                 .sum();
         totalLabel.setText("Gesamt: " + newTotal + " €");
     }
+
+
 }

@@ -70,4 +70,9 @@ public class WarenkorbTableModel extends AbstractTableModel {
             fireTableRowsDeleted(0, lastIndex);
         }
     }
+
+    public Artikel getArtikelAt(int rowIndex) {
+        return entries.get(rowIndex).getKey();
+    }
+
 }

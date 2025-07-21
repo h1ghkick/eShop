@@ -1,6 +1,8 @@
 package ui.gui;
 
 import entities.*;
+import exception.MengeNichtVerfuegbar;
+import exception.MengeNichtVerfuegbar;
 import ui.gui.gui.Panels.*;
 
 import javax.swing.*;
@@ -95,14 +97,16 @@ public class ShopClientGUI extends JFrame
 
     private void setupListeners() {
         toCartBtn.addActionListener(e -> addToCart());
-        cartBtn .addActionListener(e -> {
+        cartBtn.addActionListener(e -> {
             try {
                 openCartDialog();
             } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
+                throw new RuntimeException(ex); // das ist ok, weil das nicht anders behandelbar ist
             }
         });
     }
+
+
 
     private void showFrame() {
         setVisible(true);
@@ -122,7 +126,14 @@ public class ShopClientGUI extends JFrame
 
             Artikel art = ((ui.gui.models.ArtikelTabelModel) artikelPanel.getModel()).getArtikelAt(row);
 
-            eshop.artikelHinzufuegen(art, menge);
+            try {
+                eshop.artikelHinzufuegen(art, menge);
+            } catch (MengeNichtVerfuegbar e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+                return; // <- FEHLER: ABBRUCH!
+            }
+
+            // Nur wenn kein Fehler: Erfolgsmeldung
             JOptionPane.showMessageDialog(this,
                     menge + "× \"" + art.getArtikelBezeichnung() + "\" zum Warenkorb hinzugefügt.",
                     "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -136,6 +147,7 @@ public class ShopClientGUI extends JFrame
             throw new RuntimeException(e);
         }
     }
+
 
     private void openCartDialog() throws RemoteException {
         JDialog dlg = new JDialog(this, "Ihr Warenkorb", true);

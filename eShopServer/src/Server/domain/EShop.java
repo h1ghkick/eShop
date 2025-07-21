@@ -6,6 +6,7 @@ import exception.*;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,27 +73,34 @@ public class EShop extends UnicastRemoteObject implements EShopRemote {
     public User getAktuellerUser() throws RemoteException {
         return aktuellerUser;
     }
-    public void Kaufen(Warenkorb warenkorb,String email) throws WarenkorbIstLeer , RemoteException {
-        Map<Artikel, Integer> liste = warenkorb.listeAusgeben();
+    public Rechnung Kaufen(Warenkorb warenkorb, String email) throws WarenkorbIstLeer, RemoteException {
+        Map<Artikel, Integer> liste = warenkorb.listeAusgeben(); // KEINE Kopie mehr!
 
-       if(liste == null || liste.isEmpty()) {
-           throw new WarenkorbIstLeer();
-       }
-        for(Artikel key : liste.keySet()) {
-            int menge = liste.get(key);
-            artikelVW.artikelAuslagern(key, menge, email);
+        if (liste == null || liste.isEmpty()) throw new WarenkorbIstLeer();
+
+        for (Artikel artikel : liste.keySet()) {
+            int menge = liste.get(artikel);
+            artikelVW.artikelAuslagern(artikel, menge, email);
         }
-        List<Kunde> kundenListe = kundenVW.getAlleKunden();
-        for(Kunde key : kundenListe){
-            key.getMail();
-            if(email.equals(key.getMail())){
-                Rechnung rechnung = new Rechnung();
-                rechnung.rechnungStellen(key,liste);
+
+        Kunde kunde = null;
+        for (Kunde k : kundenVW.getAlleKunden()) {
+            if (email.equals(k.getMail())) {
+                kunde = k;
                 break;
             }
         }
+
+        if (kunde == null) throw new RuntimeException("Kunde nicht gefunden");
+
+        Rechnung rechnung = new Rechnung();
+        rechnung.rechnungStellen(kunde, liste);
+
         warenkorb.warenkorbLeeren();
+
+        return rechnung;
     }
+
 
     public boolean artikelAuslagern(Artikel key, int menge, String email) throws RemoteException {
         return artikelVW.artikelAuslagern(key,menge,email);
@@ -123,10 +131,30 @@ public class EShop extends UnicastRemoteObject implements EShopRemote {
     public List<Artikel> getArtikelBestand() throws RemoteException {
         return artikelVW.getAlleArtikel();
     }
+    // hat jetzt eine prüfung-> wichti für exception
+    public void artikelHinzufuegen(Artikel artikel, int menge)
+            throws RemoteException, MengeNichtVerfuegbar {
 
-    public void artikelHinzufuegen(Artikel artikel, int menge) throws RemoteException {
+        // 1. Lager prüfen über ArtikelVW
+        for (Artikel a : artikelVW.getAlleArtikel()) {
+            if (a.equals(artikel)) {
+                int imWarenkorb = warenkorb.listeAusgeben().getOrDefault(a, 0);
+                int gesamtMenge = imWarenkorb + menge;
+
+                if (gesamtMenge > a.getArtikelAnzahl()) {
+                    throw new MengeNichtVerfuegbar(
+                            "Nur noch " + a.getArtikelAnzahl() + " Stück verfügbar, aber du willst " + gesamtMenge +" hinzufügen"
+                    );
+                }
+
+                break;
+            }
+        }
+
+        // 2. Wenn genug da: in den Warenkorb legen
         warenkorb.artikelHinzufuegen(artikel, menge);
     }
+
 
     public Map<Artikel, Integer> listeAusgeben() throws RemoteException {
         return warenkorb.listeAusgeben();
@@ -155,6 +183,11 @@ public class EShop extends UnicastRemoteObject implements EShopRemote {
     public void gueltigePostleitzahl (String postleitzahl) throws PostleitzahlZuSchwach, RemoteException {
         if(!postleitzahl.matches("\\d{5}"))
             throw new PostleitzahlZuSchwach("Mindestens 5 Zahlen.");
+    }
+
+    @Override
+    public void entferneArtikelAusWarenkorb(Artikel artikel) throws RemoteException {
+        warenkorb.entferneArtikel(artikel);
     }
 
 
