@@ -18,7 +18,7 @@ public class Rechnung implements Serializable {
 
     public void rechnungStellen(Kunde kunde, Map<Artikel, Integer> artikelListe) {
         this.kunde = kunde;
-        this.artikelListe = new HashMap<>(artikelListe); // ✅ Kopie machen!
+        this.artikelListe = new HashMap<>(artikelListe); // Kopie wird erstellt
         this.gesamtpreis = 0.0;
 
         for (Map.Entry<Artikel, Integer> entry : artikelListe.entrySet()) {

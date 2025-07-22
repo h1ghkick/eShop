@@ -18,7 +18,7 @@ public class ArtikelVW {
     private PersistenceManager pm = new FilePersistenceManager();
 
     // Lädt Artikel aus Datei
-    public void liesDaten(String datei) throws IOException {
+    public synchronized void liesDaten(String datei) throws IOException {
         // PersistenzManager für Lesevorgänge öffnen
         pm.openForReading(datei);
 
@@ -36,7 +36,7 @@ public class ArtikelVW {
         pm.close();
     }
 
-    public void schreibeDaten(String datei) throws IOException  {
+    public synchronized void schreibeDaten(String datei) throws IOException  {
         // PersistenzManager für Schreibvorgänge öffnen
         pm.openForWriting(datei);
 
@@ -49,7 +49,7 @@ public class ArtikelVW {
     }
 
     // Artikel ins Lager einfügen (neu oder Bestand erhöhen)
-    public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail){
+    public synchronized void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail){
          for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
                 a.setArtikelAnzahl(a.getArtikelAnzahl() + menge); //menge erhöhen
@@ -67,7 +67,7 @@ public class ArtikelVW {
      * Lagert Artikel aus dem Bestand aus (z. B. beim Kauf).
      * Gibt true zurück, wenn erfolgreich, false wenn nicht genug da.
      */
-    public boolean artikelAuslagern(Artikel artikel, int menge, String benutzerEmail) {
+    public synchronized boolean artikelAuslagern(Artikel artikel, int menge, String benutzerEmail) {
         for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
                 if (a.getArtikelAnzahl() >= menge) {
@@ -85,13 +85,13 @@ public class ArtikelVW {
     }
 
     // Hilfsmethode zum Protokollieren von Ein-/Auslagerungen
-    private void logEreignis(Artikel artikel, int menge, String aktion, String benutzerEmail) {
+    private synchronized void logEreignis(Artikel artikel, int menge, String aktion, String benutzerEmail) {
         Ereignis e = new Ereignis(LocalDate.now().getDayOfYear(), artikel, menge, aktion, benutzerEmail);
         ereignisse.add(e);
     }
 
     // Sucht Artikel anhand der Bezeichnung (exakter Treffer)
-    public Artikel artikelDa(String artikelBezeichnung) {
+    public synchronized Artikel artikelDa(String artikelBezeichnung) {
         for (Artikel a : artikelBestand) {
             if (a.getArtikelBezeichnung().equals(artikelBezeichnung)) {
                 return a;
@@ -101,7 +101,7 @@ public class ArtikelVW {
     }
 
     // Sucht alle Artikel, die den Suchbegriff enthalten (case-insensitive)
-    public List<Artikel> sucheArtikel(String suchbegriff) {
+    public synchronized List<Artikel> sucheArtikel(String suchbegriff) {
         List<Artikel> treffer = new ArrayList<>();
 
         for (Artikel artikel : artikelBestand) {
@@ -114,12 +114,12 @@ public class ArtikelVW {
     }
 
     // Gibt gesamte Artikelliste zurück
-    public List<Artikel> getAlleArtikel() {
-        return artikelBestand;
+    public synchronized List<Artikel> getAlleArtikel() {
+        return new ArrayList<>(artikelBestand);
     }
 
     // Gibt alle protokollierten Ein-/Auslagerungen zurück
-    public List<Ereignis> getEreignisse() {
-        return ereignisse;
+    public synchronized List<Ereignis> getEreignisse() {
+        return new ArrayList<>(ereignisse);
     }
 }
