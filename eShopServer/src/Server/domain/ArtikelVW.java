@@ -11,10 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArtikelVW {
+    // Liste aller vorhandenen Artikel im Lager
     private List<Artikel> artikelBestand = new ArrayList<>();
+    // Liste aller Ein-/Auslagerungsereignisse
     private List<Ereignis> ereignisse = new ArrayList<>();
     private PersistenceManager pm = new FilePersistenceManager();
 
+    // Lädt Artikel aus Datei
     public void liesDaten(String datei) throws IOException {
         // PersistenzManager für Lesevorgänge öffnen
         pm.openForReading(datei);
@@ -49,17 +52,21 @@ public class ArtikelVW {
     public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail){
          for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
-                a.setArtikelAnzahl(a.getArtikelAnzahl() + menge);
+                a.setArtikelAnzahl(a.getArtikelAnzahl() + menge); //menge erhöhen
                 logEreignis(a, menge, "Einlagerung", benutzerEmail);
                 return;
             }
         }
+        // Wenn Artikel noch nicht vorhanden:
         artikel.setArtikelAnzahl(menge);
         artikelBestand.add(artikel);
         logEreignis(artikel, menge, "Einlagerung", benutzerEmail);
     }
 
-    // Artikelbestand verringern (z.B. beim Kauf)
+    /**
+     * Lagert Artikel aus dem Bestand aus (z. B. beim Kauf).
+     * Gibt true zurück, wenn erfolgreich, false wenn nicht genug da.
+     */
     public boolean artikelAuslagern(Artikel artikel, int menge, String benutzerEmail) {
         for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
@@ -82,6 +89,8 @@ public class ArtikelVW {
         Ereignis e = new Ereignis(LocalDate.now().getDayOfYear(), artikel, menge, aktion, benutzerEmail);
         ereignisse.add(e);
     }
+
+    // Sucht Artikel anhand der Bezeichnung (exakter Treffer)
     public Artikel artikelDa(String artikelBezeichnung) {
         for (Artikel a : artikelBestand) {
             if (a.getArtikelBezeichnung().equals(artikelBezeichnung)) {
@@ -90,6 +99,8 @@ public class ArtikelVW {
         }
         return null;
     }
+
+    // Sucht alle Artikel, die den Suchbegriff enthalten (case-insensitive)
     public List<Artikel> sucheArtikel(String suchbegriff) {
         List<Artikel> treffer = new ArrayList<>();
 
@@ -102,10 +113,12 @@ public class ArtikelVW {
         return treffer;
     }
 
+    // Gibt gesamte Artikelliste zurück
     public List<Artikel> getAlleArtikel() {
         return artikelBestand;
     }
 
+    // Gibt alle protokollierten Ein-/Auslagerungen zurück
     public List<Ereignis> getEreignisse() {
         return ereignisse;
     }

@@ -19,13 +19,14 @@ import entities.*;
  */
 public class FilePersistenceManager implements PersistenceManager {
 
-    private BufferedReader reader = null;
-    private PrintWriter writer = null;
+    private BufferedReader reader = null; //liest textzeiel aus Datei
+    private PrintWriter writer = null; //schreibt Textzeilen in Datei
 
+    //Öffnet Datei zum Schreiben
     public void openForReading(String datei) throws FileNotFoundException {
         reader = new BufferedReader(new FileReader(datei));
     }
-
+    // Schließt Reader und Writer (wenn offen)
     public void openForWriting(String datei) throws IOException {
         writer = new PrintWriter(
                 new BufferedWriter(
@@ -52,13 +53,7 @@ public class FilePersistenceManager implements PersistenceManager {
 
 
 
-    /**
-     * Methode zum Einlesen der Buchdaten aus einer externen Datenquelle.
-     * Das Verfügbarkeitsattribut ist in der Datenquelle (Datei) als "t" oder "f"
-     * codiert abgelegt.
-     *
-     * @return Buch-Objekt, wenn Einlesen erfolgreich, false null
-     */
+    // Liest einen Artikel aus der Datei ( Anzahl, Nummer, Name, Preis, Verfügbarkeit)
     public Artikel ladeArtikel() throws IOException {
         //Int Artikelanzahl
         String artikelAnzahl = liesZeile();
@@ -183,19 +178,7 @@ public class FilePersistenceManager implements PersistenceManager {
         return new Mitarbeiter(firstName,lastName,email,password);
     }
 
-
-
-
-    /**
-     * Methode zum Schreiben der Buchdaten in eine externe Datenquelle.
-     * Das Verfügbarkeitsattribut wird in der Datenquelle (Datei) als "t" oder "f"
-     * codiert abgelegt.
-     * @param artikel Buch-Objekt, das gespeichert werden soll
-     * @return true, wenn Schreibvorgang erfolgreich, false sonst
-     */
-
-
-
+    //Schreibt in die Datei
     @Override
     public boolean speicherArtikel(Artikel artikel) throws IOException {
         // Titel, Nummer und Verfügbarkeit schreiben
@@ -208,6 +191,7 @@ public class FilePersistenceManager implements PersistenceManager {
         return true;
     }
 
+    //Schreibt in die Datei
     @Override
     public boolean speicherKunde(Kunde kunde) throws IOException {
         // Titel, Nummer und Verfügbarkeit schreiben
@@ -221,6 +205,7 @@ public class FilePersistenceManager implements PersistenceManager {
         return  true;
     }
 
+    //schreibt in die Datei
     public boolean speicherMitarbeiter(Mitarbeiter mitarbeiter) throws IOException{
         schreibeZeile(String.valueOf(mitarbeiter.getFirstName()));
         schreibeZeile(String.valueOf(mitarbeiter.getLastName()));
@@ -230,11 +215,7 @@ public class FilePersistenceManager implements PersistenceManager {
     }
 
 
-
-
-
-
-
+    // Liest eine Zeile aus der Datei
     private String liesZeile() throws IOException {
         if (reader != null)
             return reader.readLine();
@@ -243,7 +224,7 @@ public class FilePersistenceManager implements PersistenceManager {
     }
 
 
-
+    // Schreibt eine Zeile in die Datei (wenn Writer vorhanden)
     private void schreibeZeile(String daten) {
         if (writer != null)
             writer.println(daten);

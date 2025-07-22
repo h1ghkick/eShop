@@ -17,7 +17,7 @@ public class Warenkorb implements Serializable {
     public void artikelHinzufuegen(Artikel artikel, int menge) {
         //entweder die aktuelle menge nehmen oder er nimmt defaultValue = 0;
         int aktuelleMenge = artikelListe.getOrDefault(artikel, 0);
-        //addieren
+        //menge erhöhen oder neu einfügen
         artikelListe.put(artikel, aktuelleMenge + menge);
     }
 
@@ -46,7 +46,7 @@ public class Warenkorb implements Serializable {
         return "";
     }
 
-
+    // Entfernt einen Artikel komplett
     public String artikelKomplettEntfernen(Artikel artikel) {
         if (artikelListe.containsKey(artikel)) {
             artikelListe.remove(artikel); // entfernt den Artikel aus der Map
@@ -56,11 +56,12 @@ public class Warenkorb implements Serializable {
         return "";
     }
 
+    // Alternative Methode – entfernt den Artikel direkt (falls vorhanden)
     public void entferneArtikel(Artikel artikel) {
         artikelListe.remove(artikel); // oder wie du die Map nennst
     }
 
-
+    // Leert den gesamten Warenkorb
     public void warenkorbLeeren() {
         artikelListe.clear();
     }
