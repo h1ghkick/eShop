@@ -46,6 +46,14 @@ public class Artikel implements Serializable {
         }
     }
 
+    @Override
+    public int hashCode() {
+        int result = Integer.hashCode(artikelNummer);
+        result = 31 * result + (artikelBezeichnung != null ? artikelBezeichnung.hashCode() : 0);
+        return result;
+    }
+
+
 
 
     public double getPreis() {return preis;}
