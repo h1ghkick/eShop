@@ -4,6 +4,7 @@ package entities;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Warenkorb implements Serializable {
     private Map<Artikel, Integer> artikelListe;

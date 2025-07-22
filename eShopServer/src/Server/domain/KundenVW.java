@@ -30,7 +30,7 @@ public class KundenVW {
         pm.close();
     }
 
-    public void schreibeDaten(String datei) throws IOException  {
+    public synchronized void schreibeDaten(String datei) throws IOException  {
         // PersistenzManager für Schreibvorgänge öffnen
         pm.openForWriting(datei);
 
@@ -42,11 +42,11 @@ public class KundenVW {
         pm.close();
     }
 
-    public void einfuegenKunden(Kunde kunde) {
+    public synchronized void einfuegenKunden(Kunde kunde) {
         kundenListe.add(kunde);
     }
 
-    public boolean istRegistriert(String email) {
+    public synchronized boolean istRegistriert(String email) {
         for (Kunde k : kundenListe) {
             if (k.getMail().equalsIgnoreCase(email)) {
                 return true;
@@ -55,7 +55,7 @@ public class KundenVW {
         return false;
     }
 
-    public List<Kunde> getAlleKunden() {
+    public synchronized List<Kunde> getAlleKunden() {
         return new ArrayList<>(kundenListe);
     }
 }
