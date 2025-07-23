@@ -3,6 +3,8 @@ package ui.gui.gui.Panels;
 import entities.EShopRemote;
 import entities.Kunde;
 import exception.LoginException;
+import exception.PasswortZuSchwach;
+import exception.PostleitzahlZuSchwach;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +20,11 @@ public class StartPanel extends JDialog {
     private final JTextField vornameField    = new JTextField(20);
     private final JTextField nachnameField   = new JTextField(20);
     private final JPasswordField confirmField = new JPasswordField(20);
+
+    // NEU
+    private final JTextField strasseField    = new JTextField(20);
+    private final JTextField wohnortField    = new JTextField(20);
+    private final JTextField plzField        = new JTextField(20);
 
     private final EShopRemote eshop;
     private Object benutzer;
@@ -52,12 +59,18 @@ public class StartPanel extends JDialog {
         content.add(toggleBtn);
 
         // 4) Registrierungs-Panel (anfangs versteckt)
-        registerPanel = new JPanel(new GridLayout(3, 2, 5, 5));
+        registerPanel = new JPanel(new GridLayout(7, 2, 5, 5)); // 7 Zeilen (6 Felder + ConfirmPW)
         registerPanel.setBorder(BorderFactory.createTitledBorder("Registrieren"));
         registerPanel.add(new JLabel("Vorname:"));
         registerPanel.add(vornameField);
         registerPanel.add(new JLabel("Nachname:"));
         registerPanel.add(nachnameField);
+        registerPanel.add(new JLabel("Straße:"));
+        registerPanel.add(strasseField);
+        registerPanel.add(new JLabel("Wohnort:"));
+        registerPanel.add(wohnortField);
+        registerPanel.add(new JLabel("PLZ:"));
+        registerPanel.add(plzField);
         registerPanel.add(new JLabel("Passwort bestätigen:"));
         registerPanel.add(confirmField);
         registerPanel.setVisible(false);
@@ -110,13 +123,17 @@ public class StartPanel extends JDialog {
         // Registrierung abschließen
         registerBtn.addActionListener(e -> {
             String vorname = vornameField.getText().trim();
-            String nachname= nachnameField.getText().trim();
-            String email   = emailField.getText().trim();
-            String pw1     = new String(passwordField.getPassword()).trim();
-            String pw2     = new String(confirmField.getPassword()).trim();
+            String nachname = nachnameField.getText().trim();
+            String email = emailField.getText().trim();
+            String pw1 = new String(passwordField.getPassword()).trim();
+            String pw2 = new String(confirmField.getPassword()).trim();
+            String strasse = strasseField.getText().trim();
+            String wohnort = wohnortField.getText().trim();
+            String plz = plzField.getText().trim();
 
-            // nur Vor­/Nachname, E-Mail und Passwort als Pflicht
-            if (vorname.isEmpty() || nachname.isEmpty() || email.isEmpty() || pw1.isEmpty()) {
+            // Pflichtfelder checken
+            if (vorname.isEmpty() || nachname.isEmpty() || email.isEmpty() || pw1.isEmpty()
+                    || strasse.isEmpty() || wohnort.isEmpty() || plz.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                         "Bitte alle Felder ausfüllen.",
                         "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -129,30 +146,50 @@ public class StartPanel extends JDialog {
                 return;
             }
 
-            // Kunde anlegen & speichern
-            Kunde neu = new Kunde(
-                    vorname, nachname,
-                    email, pw1,
-                    "", "", 0
-            );
+            int plzNumber;
             try {
+                plzNumber = Integer.parseInt(plz);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Bitte gib eine gültige fünfstellige Zahl als Postleitzahl ein.",
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                eshop.gueltigesPasswort(pw1);       // Prüfung auf Passwort
+                eshop.gueltigePostleitzahl(plz);    // Prüfung auf Postleitzahl
+
+                Kunde neu = new Kunde(vorname, nachname, email, pw1, strasse, wohnort, plzNumber);
                 eshop.einfuegenKunden(neu);
                 eshop.speicherOption();
+
                 JOptionPane.showMessageDialog(this,
                         "Registrierung abgeschlossen! Bitte einloggen.",
                         "Info", JOptionPane.INFORMATION_MESSAGE);
-                // Formular zurücksetzen
+
+                // Felder zurücksetzen
                 vornameField.setText("");
                 nachnameField.setText("");
                 passwordField.setText("");
                 confirmField.setText("");
+                strasseField.setText("");
+                wohnortField.setText("");
+                plzField.setText("");
+
                 registerPanel.setVisible(false);
                 registerBtn.setVisible(false);
-
-                // Login- & "Neu registrieren"-Buttons wieder einblenden
                 loginBtn.setVisible(true);
                 toggleBtn.setVisible(true);
                 pack();
+            } catch (PasswortZuSchwach ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Ungültiges Passwort: " + ex.getMessage(),
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+            } catch (PostleitzahlZuSchwach ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Ungültige Postleitzahl: " + ex.getMessage(),
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,
                         "Speichern fehlgeschlagen: " + ex.getMessage(),

@@ -30,7 +30,7 @@ public class MitarbeiterVW {
         pm.close();
     }
 
-    public void schreibeDaten(String datei) throws IOException  {
+    public synchronized void schreibeDaten(String datei) throws IOException  {
         // PersistenzManager für Schreibvorgänge öffnen
         pm.openForWriting(datei);
 
@@ -42,12 +42,12 @@ public class MitarbeiterVW {
         pm.close();
     }
 
-    public void einfuegenMitarbeiter(Mitarbeiter arbeiter) {
+    public synchronized void einfuegenMitarbeiter(Mitarbeiter arbeiter) {
         mitarbeiterListe.add(arbeiter);
     }
 
 
-    public boolean istRegistriert(String email) {
+    public synchronized boolean istRegistriert(String email) {
         for (Mitarbeiter m : mitarbeiterListe) {
             if (m.getMail().equalsIgnoreCase(email)) {
                 return true;
@@ -56,7 +56,7 @@ public class MitarbeiterVW {
         return false;
     }
 
-    public List<Mitarbeiter> getAlleMitarbeiter() {
+    public synchronized List<Mitarbeiter> getAlleMitarbeiter() {
         return new ArrayList<>(mitarbeiterListe);
     }
 }

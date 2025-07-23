@@ -40,7 +40,7 @@ public class EShop extends UnicastRemoteObject implements EShopRemote {
     }
 
 
-    public User einloggen(String email, String password) throws LoginException, RemoteException {
+    public synchronized User einloggen(String email, String password) throws LoginException, RemoteException {
         for (Kunde k : kundenVW.getAlleKunden()) {
             if (k.getMail().equalsIgnoreCase(email)) {
                 if (k.getPassword().equals(password)) {

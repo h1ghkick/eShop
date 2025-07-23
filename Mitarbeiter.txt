@@ -2,3 +2,18 @@ Max
 Mustermann
 max@beispiel.de
 geheim123
+<<<<<<< HEAD
+=======
+Justus
+Anders
+justus@web.de
+123
+fyn
+paajanen
+fyn@web.de
+123abc
+Jule
+Cirk
+j.cirk@web.de
+1234
+>>>>>>> main
