@@ -13,19 +13,20 @@ public class ArtikelTabelModel extends AbstractTableModel {
 
     public ArtikelTabelModel(List<Artikel> aktuelleArtikel) {
         super();
-        // Ich erstelle eine Kopie der Bücherliste,
-        // damit beim Aktualisieren (siehe Methode setBooks())
-        // keine unerwarteten Seiteneffekte entstehen.
-        artikel = new ArrayList<>(aktuelleArtikel);
+        artikel = new ArrayList<>();
+        setArtikel(aktuelleArtikel); // Dadurch ist auch beim Start alles sortiert!
     }
+
 
     public void setArtikel(List<Artikel> aktuelleArtikel) {
         artikel.clear();
-        artikel.addAll(aktuelleArtikel);
-        // JTable benachrichtigen, dass Daten geändert wurden.
-        // (Löst neues Zeichnen aus.)
+        aktuelleArtikel.stream()
+                .sorted((a, b) -> a.getArtikelBezeichnung().trim().compareToIgnoreCase(b.getArtikelBezeichnung().trim()))
+                .forEach(artikel::add);
         fireTableDataChanged();
     }
+
+
 
 
     /*
