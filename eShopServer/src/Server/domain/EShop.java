@@ -3,6 +3,7 @@ package Server.domain;
 import entities.*;
 import exception.*;
 
+
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -133,27 +134,35 @@ public class EShop extends UnicastRemoteObject implements EShopRemote {
     }
     // hat jetzt eine prüfung-> wichti für exception
     public void artikelHinzufuegen(Artikel artikel, int menge)
-            throws RemoteException, MengeNichtVerfuegbar {
+            throws RemoteException, MengeNichtVerfuegbar, VielFaches {
 
-        // 1. Lager prüfen über ArtikelVW
+        // Zusatzprüfung für MassengutArtikel
+        if (artikel instanceof MassengutArtikel) {
+            MassengutArtikel mArtikel = (MassengutArtikel) artikel;
+            if (menge % mArtikel.getPackungsgroesse() != 0) {
+                throw new VielFaches("Die Menge muss ein Vielfaches der Packungsgröße (" +
+                        mArtikel.getPackungsgroesse() + ") sein.");
+            }
+        }
+
+        // verwaltung überprüfen
         for (Artikel a : artikelVW.getAlleArtikel()) {
             if (a.equals(artikel)) {
                 int imWarenkorb = warenkorb.listeAusgeben().getOrDefault(a, 0);
                 int gesamtMenge = imWarenkorb + menge;
 
                 if (gesamtMenge > a.getArtikelAnzahl()) {
-                    throw new MengeNichtVerfuegbar(
-                            "Nur noch " + a.getArtikelAnzahl() + " Stück verfügbar, aber du willst " + gesamtMenge +" hinzufügen"
-                    );
+                    throw new MengeNichtVerfuegbar("Nur noch " + a.getArtikelAnzahl()
+                            + " Stück verfügbar, aber du willst " + gesamtMenge + " hinzufügen");
                 }
-
                 break;
             }
         }
 
-        // 2. Wenn genug da: in den Warenkorb legen
+        // 2. In den Warenkorb legen
         warenkorb.artikelHinzufuegen(artikel, menge);
     }
+
 
 
     public Map<Artikel, Integer> listeAusgeben() throws RemoteException {

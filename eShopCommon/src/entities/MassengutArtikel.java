@@ -5,7 +5,10 @@ public class MassengutArtikel extends Artikel {
 
     public MassengutArtikel(int artikelAnzahl, int artikelNummer, String artikelBezeichnung, double preis, int packungsgroesse) {
         super(artikelAnzahl, artikelNummer, artikelBezeichnung, preis);
-         this.packungsgroesse = packungsgroesse;
+        this.packungsgroesse = packungsgroesse;
+        //Wichtig für die unterscheidung ob es Massengutartikel ist
+        if (artikelAnzahl % packungsgroesse != 0)
+            throw new IllegalArgumentException("Initiale Anzahl muss ein Vielfaches der Packungsgröße sein.");
     }
 
     public int getPackungsgroesse() {
@@ -40,4 +43,6 @@ public class MassengutArtikel extends Artikel {
     public String toString() {
         return super.toString() + "(Massengutartikel – Packung zu " + packungsgroesse + ")";
     }
+
+
 }

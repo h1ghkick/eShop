@@ -102,6 +102,7 @@ public class StartPanel extends JDialog {
                 JOptionPane.showMessageDialog(this,
                         "Login fehlgeschlagen: " + ex.getMessage(),
                         "Fehler", JOptionPane.ERROR_MESSAGE);
+
             }
         });
 

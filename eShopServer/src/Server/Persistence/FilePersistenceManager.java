@@ -55,47 +55,43 @@ public class FilePersistenceManager implements PersistenceManager {
 
     // Liest einen Artikel aus der Datei ( Anzahl, Nummer, Name, Preis, Verfügbarkeit)
     public Artikel ladeArtikel() throws IOException {
-        //Int Artikelanzahl
+        // Artikelanzahl
         String artikelAnzahl = liesZeile();
-        if(artikelAnzahl ==null){
-            return null;
-        }
-        int artikelAnzahlToString = Integer.parseInt(artikelAnzahl);
+        if (artikelAnzahl == null) return null;
+        int anzahl = Integer.parseInt(artikelAnzahl);
 
-        //Int Artikelnummer
+        // Artikelnummer
         String artikelNummer = liesZeile();
-        if (artikelNummer == null) {
-            return null;
-        }
-        int artikelNummerToString = Integer.parseInt(artikelNummer);
+        if (artikelNummer == null) return null;
+        int nummer = Integer.parseInt(artikelNummer);
 
-        //String Artikelbezeichnung einlesen
-        String artikelBezeichnung = liesZeile();
-        if (artikelBezeichnung == null) {
-            // keine Daten mehr vorhanden
-            return null;
-        }
+        // Bezeichnung
+        String bezeichnung = liesZeile();
+        if (bezeichnung == null) return null;
 
-
-        //Int Artikel Preis
+        // Preis
         String artikelPreis = liesZeile();
-        if (artikelPreis == null) {
-            // keine Daten mehr vorhanden
-            return null;
+        if (artikelPreis == null) return null;
+        double preis = Double.parseDouble(artikelPreis);
+
+        // Verfügbar
+        String verfuegbarZeile = liesZeile();
+        if (verfuegbarZeile == null) return null;
+        boolean verfuegbar = verfuegbarZeile.equals("t");
+
+        // Optional: Packungsgröße (wenn vorhanden ⇒ MassengutArtikel)
+        String packungsgroesse = liesZeile();
+        if (packungsgroesse == null || packungsgroesse.isEmpty()) {
+            return new Artikel(anzahl, nummer, bezeichnung, preis, verfuegbar);
+        } else {
+            int packung = Integer.parseInt(packungsgroesse);
+            return new MassengutArtikel(anzahl, nummer, bezeichnung, preis, packung);
         }
-        double artikelPreisToString = Double.parseDouble(artikelPreis);
-
-        // ArtikelVrerfuegbar?
-        String artikelVerfuegbar = liesZeile();
-        // Codierung des Ausleihstatus in boolean umwandeln
-        boolean verfuegbar = artikelVerfuegbar.equals("t") ? true : false;
-
-            // neues Buch-Objekt anlegen und zurückgeben
-        return new Artikel(artikelAnzahlToString,artikelNummerToString,artikelBezeichnung,artikelPreisToString,verfuegbar);
     }
 
 
-   @Override
+
+    @Override
     public Kunde ladeKunde() throws IOException {
         //String firstName
         String firstName = liesZeile();
@@ -181,15 +177,22 @@ public class FilePersistenceManager implements PersistenceManager {
     //Schreibt in die Datei
     @Override
     public boolean speicherArtikel(Artikel artikel) throws IOException {
-        // Titel, Nummer und Verfügbarkeit schreiben
         schreibeZeile(String.valueOf(artikel.getArtikelAnzahl()));
         schreibeZeile(String.valueOf(artikel.getArtikelNummer()));
         schreibeZeile(artikel.getArtikelBezeichnung());
         schreibeZeile(String.valueOf(artikel.getPreis()));
         String verfuegbar = artikel.getArtikelVerfuegbar() ? "t" : "f";
         schreibeZeile(verfuegbar);
+
+        if (artikel instanceof MassengutArtikel) {
+            schreibeZeile(String.valueOf(((MassengutArtikel) artikel).getPackungsgroesse()));
+        } else {
+            schreibeZeile(""); // Platzhalter-Zeile, damit ladeArtikel funktioniert
+        }
+
         return true;
     }
+
 
     //Schreibt in die Datei
     @Override

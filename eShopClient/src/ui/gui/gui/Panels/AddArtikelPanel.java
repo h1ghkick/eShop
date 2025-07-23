@@ -1,8 +1,6 @@
 package ui.gui.gui.Panels;
 
-import entities.EShopRemote;
-import entities.Artikel;
-
+import entities.*;
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
@@ -19,18 +17,19 @@ public class AddArtikelPanel extends JPanel {
     private final JTextField nummerField;
     private final JTextField preisField;
     private final JTextField mengeField;
+    private final JTextField packungsgroesseField; // NEU
     private final JButton addButton;
 
     public AddArtikelPanel(EShopRemote eshop, AddArtikelListener listener) {
         this.eshop    = eshop;
         this.listener = listener;
 
-        // Felder anlegen
-        titelField  = new JTextField(20);
-        nummerField = new JTextField(20);
-        preisField  = new JTextField(20);
-        mengeField  = new JTextField(20);
-        addButton   = new JButton("Hinzufügen");
+        titelField          = new JTextField(20);
+        nummerField         = new JTextField(20);
+        preisField          = new JTextField(20);
+        mengeField          = new JTextField(20);
+        packungsgroesseField = new JTextField(20); // NEU
+        addButton           = new JButton("Hinzufügen");
 
         initLayout();
         initEvents();
@@ -43,63 +42,80 @@ public class AddArtikelPanel extends JPanel {
         c.insets = new Insets(5,5,5,5);
         c.fill   = GridBagConstraints.HORIZONTAL;
 
-        // Zeile 0: Titel
+        // Titel
         c.gridx=0; c.gridy=0; c.weightx=0; add(new JLabel("Titel:"), c);
         c.gridx=1; c.weightx=1; add(titelField, c);
 
-        // Zeile 1: Nummer
+        // Nummer
         c.gridx=0; c.gridy=1; c.weightx=0; add(new JLabel("Artikelnummer:"), c);
         c.gridx=1; c.weightx=1; add(nummerField, c);
 
-        // Zeile 2: Preis
+        // Preis
         c.gridx=0; c.gridy=2; c.weightx=0; add(new JLabel("Preis:"), c);
         c.gridx=1; c.weightx=1; add(preisField, c);
 
-        // Zeile 3: Menge
+        // Menge
         c.gridx=0; c.gridy=3; c.weightx=0; add(new JLabel("Menge:"), c);
         c.gridx=1; c.weightx=1; add(mengeField, c);
 
-        // Zeile 4: Button
-        c.gridx=0; c.gridy=4; c.gridwidth=2;
+        // Packungsgroesse (optional)
+        c.gridx=0; c.gridy=4; c.weightx=0; add(new JLabel("Packungsgröße (optional):"), c);
+        c.gridx=1; c.weightx=1; add(packungsgroesseField, c);
+
+        // Button
+        c.gridx=0; c.gridy=5; c.gridwidth=2;
         c.fill = GridBagConstraints.NONE; c.anchor = GridBagConstraints.CENTER;
         add(addButton, c);
     }
 
     private void initEvents() {
         addButton.addActionListener(e -> {
-            String t = titelField.getText().trim();
-            String n = nummerField.getText().trim();
-            String p = preisField.getText().trim();
-            String m = mengeField.getText().trim();
+            String titel  = titelField.getText().trim();
+            String nummer = nummerField.getText().trim();
+            String preis  = preisField.getText().trim();
+            String menge  = mengeField.getText().trim();
+            String packung = packungsgroesseField.getText().trim();
 
-            if (t.isEmpty() || n.isEmpty() || p.isEmpty() || m.isEmpty()) {
+            if (titel.isEmpty() || nummer.isEmpty() || preis.isEmpty() || menge.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
-                        "Bitte alle Felder ausfüllen.",
+                        "Bitte alle Pflichtfelder ausfüllen.",
                         "Fehler", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             try {
-                int nummer = Integer.parseInt(n);
-                double preis  = Double.parseDouble(p);
-                int menge  = Integer.parseInt(m);
+                int artikelnummer = Integer.parseInt(nummer);
+                double artikelpreis = Double.parseDouble(preis);
+                int artikelmenge = Integer.parseInt(menge);
 
-                // Domäne aufrufen
-                Artikel artikel = new Artikel(menge, nummer, t, preis);
-                eshop.artikelEinfuegen(artikel, menge);
+                Artikel artikel;
 
-                // UI zurücksetzen
-                titelField .setText("");
+                // Prüfen, ob Packungsgröße gesetzt → MassengutArtikel
+                if (!packung.isEmpty()) {
+                    int packungsgroesse = Integer.parseInt(packung);
+                    artikel = new MassengutArtikel(artikelmenge, artikelnummer, titel, artikelpreis, packungsgroesse);
+                } else {
+                    artikel = new Artikel(artikelmenge, artikelnummer, titel, artikelpreis);
+                }
+
+                eshop.artikelEinfuegen(artikel, artikelmenge);
+
+                // UI reset
+                titelField.setText("");
                 nummerField.setText("");
-                preisField .setText("");
-                mengeField .setText("");
+                preisField.setText("");
+                mengeField.setText("");
+                packungsgroesseField.setText("");
 
-                // Tabelle aktualisieren
                 listener.onArtikelAdded(artikel);
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this,
-                        "Nummer, Preis und Menge müssen Zahlen sein.",
+                        "Bitte gültige Zahlen eingeben (Nummer, Preis, Menge, Packung).",
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
                         "Fehler", JOptionPane.ERROR_MESSAGE);
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);

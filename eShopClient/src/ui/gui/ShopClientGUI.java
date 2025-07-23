@@ -2,7 +2,7 @@ package ui.gui;
 
 import entities.*;
 import exception.MengeNichtVerfuegbar;
-import exception.MengeNichtVerfuegbar;
+import exception.VielFaches;
 import ui.gui.gui.Panels.*;
 
 import javax.swing.*;
@@ -20,10 +20,10 @@ public class ShopClientGUI extends JFrame
     private SearchArtikelPanel searchPanel;
     private ArtikelTablePanel artikelPanel;
 
-    // Bottom‐Panel Komponenten
     private JTextField mengeField;
     private JButton toCartBtn;
     private JButton cartBtn;
+    private JButton testbtn;
 
     private static int DEFAULT_PORT = 1099;
 
@@ -52,8 +52,6 @@ public class ShopClientGUI extends JFrame
             throw new RuntimeException(e);
         }
     }
-
-    // ---------------- Kunden‐UI ----------------
 
     private void initializeKundenUI() throws RemoteException {
         setupMainFrame();
@@ -89,8 +87,11 @@ public class ShopClientGUI extends JFrame
 
         toCartBtn = new JButton("In den Warenkorb");
         cartBtn   = new JButton("Warenkorb öffnen");
+        testbtn   = new JButton("test");
+
         bottom.add(toCartBtn);
         bottom.add(cartBtn);
+        bottom.add(testbtn);
 
         add(bottom, BorderLayout.SOUTH);
     }
@@ -101,12 +102,13 @@ public class ShopClientGUI extends JFrame
             try {
                 openCartDialog();
             } catch (RemoteException ex) {
-                throw new RuntimeException(ex); // das ist ok, weil das nicht anders behandelbar ist
+                throw new RuntimeException(ex);
             }
         });
+        testbtn.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "19%");
+        });
     }
-
-
 
     private void showFrame() {
         setVisible(true);
@@ -130,10 +132,12 @@ public class ShopClientGUI extends JFrame
                 eshop.artikelHinzufuegen(art, menge);
             } catch (MengeNichtVerfuegbar e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
-                return; // <- FEHLER: ABBRUCH!
+                return;
+            } catch (VielFaches e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
-            // Nur wenn kein Fehler: Erfolgsmeldung
             JOptionPane.showMessageDialog(this,
                     menge + "× \"" + art.getArtikelBezeichnung() + "\" zum Warenkorb hinzugefügt.",
                     "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -148,7 +152,6 @@ public class ShopClientGUI extends JFrame
         }
     }
 
-
     private void openCartDialog() throws RemoteException {
         JDialog dlg = new JDialog(this, "Ihr Warenkorb", true);
         dlg.getContentPane().add(new WarenkorbPanel(eshop));
@@ -156,11 +159,8 @@ public class ShopClientGUI extends JFrame
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
 
-        // Nach Schließen evtl. Tabelle neu laden
         artikelPanel.updateArtikel(eshop.getArtikelBestand());
     }
-
-    // ---------------- Mitarbeiter‐UI ----------------
 
     private void initializeMitarbeiterUI() throws RemoteException {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -171,18 +171,13 @@ public class ShopClientGUI extends JFrame
         List<Artikel> artikel = eshop.getArtikelBestand();
         artikelPanel = new ArtikelTablePanel(artikel);
 
-
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(searchPanel, BorderLayout.NORTH);
 
-
         JButton createEmployeeBtn = new JButton("Mitarbeiter:in anlegen");
         topPanel.add(createEmployeeBtn, BorderLayout.SOUTH);
-
-
         createEmployeeBtn.addActionListener(e -> openCreateEmployeeDialog());
 
-        // Statt searchPanel jetzt topPanel einfügen
         add(topPanel, BorderLayout.NORTH);
         add(addPanel, BorderLayout.WEST);
         add(new JScrollPane(artikelPanel), BorderLayout.CENTER);
@@ -190,9 +185,6 @@ public class ShopClientGUI extends JFrame
         setSize(800, 500);
         setVisible(true);
     }
-
-
-    // ---------------- Interface‐Methoden ----------------
 
     @Override
     public void onArtikelAdded(Artikel artikel) throws RemoteException {
@@ -214,7 +206,6 @@ public class ShopClientGUI extends JFrame
     private void openCreateEmployeeDialog() {
         new EinfuegenMitarbeiterDialog(this, eshop).setVisible(true);
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ShopClientGUI("ESHOP"));

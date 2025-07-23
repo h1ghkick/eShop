@@ -4,6 +4,7 @@ import Server.Persistence.FilePersistenceManager;
 import Server.Persistence.PersistenceManager;
 import entities.Artikel;
 import entities.Ereignis;
+import entities.MassengutArtikel;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -16,9 +17,11 @@ public class ArtikelVW {
     // Liste aller Ein-/Auslagerungsereignisse
     private List<Ereignis> ereignisse = new ArrayList<>();
     private PersistenceManager pm = new FilePersistenceManager();
+    private String datei;
 
     // Lädt Artikel aus Datei
     public synchronized void liesDaten(String datei) throws IOException {
+        this.datei = datei;
         // PersistenzManager für Lesevorgänge öffnen
         pm.openForReading(datei);
 
@@ -49,40 +52,75 @@ public class ArtikelVW {
     }
 
     // Artikel ins Lager einfügen (neu oder Bestand erhöhen)
-    public synchronized void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail){
-         for (Artikel a : artikelBestand) {
+    public synchronized void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail) {
+        // Wenn MassengutArtikel → Menge muss Vielfaches der Packungsgröße sein
+        if (artikel instanceof MassengutArtikel) {
+            MassengutArtikel mArtikel = (MassengutArtikel) artikel;
+            if (menge % mArtikel.getPackungsgroesse() != 0) {
+                throw new IllegalArgumentException("Menge muss ein Vielfaches der Packungsgröße sein.");
+            }
+        }
+
+        for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
-                a.setArtikelAnzahl(a.getArtikelAnzahl() + menge); //menge erhöhen
+                a.setArtikelAnzahl(a.getArtikelAnzahl() + menge);
                 logEreignis(a, menge, "Einlagerung", benutzerEmail);
+                try {
+                    speichereArtikelBestand();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return;
             }
         }
-        // Wenn Artikel noch nicht vorhanden:
+
         artikel.setArtikelAnzahl(menge);
         artikelBestand.add(artikel);
         logEreignis(artikel, menge, "Einlagerung", benutzerEmail);
+        try {
+            speichereArtikelBestand();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
+
 
     /**
      * Lagert Artikel aus dem Bestand aus (z. B. beim Kauf).
      * Gibt true zurück, wenn erfolgreich, false wenn nicht genug da.
      */
     public synchronized boolean artikelAuslagern(Artikel artikel, int menge, String benutzerEmail) {
+        // Wenn MassengutArtikel → Menge muss Vielfaches der Packungsgröße sein
+        if (artikel instanceof MassengutArtikel) {
+            MassengutArtikel mArtikel = (MassengutArtikel) artikel;
+            if (menge % mArtikel.getPackungsgroesse() != 0) {
+                throw new IllegalArgumentException("Menge muss ein Vielfaches der Packungsgröße sein.");
+            }
+        }
+
         for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
                 if (a.getArtikelAnzahl() >= menge) {
                     a.setArtikelAnzahl(a.getArtikelAnzahl() - menge);
-                    if(a.getArtikelAnzahl() == 0){
+                    if (a.getArtikelAnzahl() == 0) {
                         a.setArtikelVerfuegbar(false);
                     }
                     logEreignis(a, menge, "Auslagerung", benutzerEmail);
+                    try {
+                        speichereArtikelBestand();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     return true;
                 }
-                return false;// Nicht genug Bestand
             }
         }
-        return false; // Artikel nicht gefunden
+        return false;
     }
+
+
 
     // Hilfsmethode zum Protokollieren von Ein-/Auslagerungen
     private synchronized void logEreignis(Artikel artikel, int menge, String aktion, String benutzerEmail) {
@@ -112,6 +150,15 @@ public class ArtikelVW {
 
         return treffer;
     }
+
+    public synchronized void speichereArtikelBestand() throws IOException {
+        pm.openForWriting(datei);
+        for (Artikel artikel : artikelBestand) {
+            pm.speicherArtikel(artikel);
+        }
+        pm.close();
+    }
+
 
     // Gibt gesamte Artikelliste zurück
     public synchronized List<Artikel> getAlleArtikel() {
