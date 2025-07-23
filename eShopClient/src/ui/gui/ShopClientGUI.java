@@ -3,6 +3,7 @@ package ui.gui;
 import entities.*;
 import exception.MengeNichtVerfuegbar;
 import exception.MengeNichtVerfuegbar;
+import exception.VielFaches;
 import ui.gui.gui.Panels.*;
 
 import javax.swing.*;
@@ -130,8 +131,12 @@ public class ShopClientGUI extends JFrame
                 eshop.artikelHinzufuegen(art, menge);
             } catch (MengeNichtVerfuegbar e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
-                return; // <- FEHLER: ABBRUCH!
+                return;
+            } catch (VielFaches e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
 
             // Nur wenn kein Fehler: Erfolgsmeldung
             JOptionPane.showMessageDialog(this,
@@ -171,14 +176,11 @@ public class ShopClientGUI extends JFrame
         List<Artikel> artikel = eshop.getArtikelBestand();
         artikelPanel = new ArtikelTablePanel(artikel);
 
-
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(searchPanel, BorderLayout.NORTH);
 
-
         JButton createEmployeeBtn = new JButton("Mitarbeiter:in anlegen");
         topPanel.add(createEmployeeBtn, BorderLayout.SOUTH);
-
 
         createEmployeeBtn.addActionListener(e -> openCreateEmployeeDialog());
 
@@ -219,4 +221,7 @@ public class ShopClientGUI extends JFrame
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ShopClientGUI("ESHOP"));
     }
+
+
+
 }

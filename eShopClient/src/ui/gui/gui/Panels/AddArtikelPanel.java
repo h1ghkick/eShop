@@ -2,6 +2,7 @@ package ui.gui.gui.Panels;
 
 import entities.EShopRemote;
 import entities.Artikel;
+import entities.MassengutArtikel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +21,8 @@ public class AddArtikelPanel extends JPanel {
     private final JTextField preisField;
     private final JTextField mengeField;
     private final JButton addButton;
-
+    private final JCheckBox massengutCheckbox;
+    private final JTextField packungsgroesseField;
     public AddArtikelPanel(EShopRemote eshop, AddArtikelListener listener) {
         this.eshop    = eshop;
         this.listener = listener;
@@ -31,6 +33,9 @@ public class AddArtikelPanel extends JPanel {
         preisField  = new JTextField(20);
         mengeField  = new JTextField(20);
         addButton   = new JButton("Hinzufügen");
+        massengutCheckbox = new JCheckBox("Massengutartikel");
+        packungsgroesseField = new JTextField(5);
+        packungsgroesseField.setVisible(false);
 
         initLayout();
         initEvents();
@@ -63,9 +68,32 @@ public class AddArtikelPanel extends JPanel {
         c.gridx=0; c.gridy=4; c.gridwidth=2;
         c.fill = GridBagConstraints.NONE; c.anchor = GridBagConstraints.CENTER;
         add(addButton, c);
+
+        // Zeile 4: Checkbox Massengut
+        c.gridx = 0; c.gridy = 4; c.gridwidth = 2;
+        c.anchor = GridBagConstraints.WEST;
+        add(massengutCheckbox, c);
+
+// Zeile 5: Packungsgröße
+        c.gridy = 5;
+        add(new JLabel("Packungsgröße:"), c);
+        c.gridx = 1;
+        add(packungsgroesseField, c);
+
+// Zeile 6: Button
+        c.gridx = 0; c.gridy = 6; c.gridwidth = 2;
+        c.fill = GridBagConstraints.NONE; c.anchor = GridBagConstraints.CENTER;
+        add(addButton, c);
+
     }
 
     private void initEvents() {
+        massengutCheckbox.addActionListener(ev -> {
+            packungsgroesseField.setVisible(massengutCheckbox.isSelected());
+            this.revalidate(); // Layout neu berechnen
+            this.repaint();    // UI neu malen
+        });
+
         addButton.addActionListener(e -> {
             String t = titelField.getText().trim();
             String n = nummerField.getText().trim();
@@ -85,14 +113,40 @@ public class AddArtikelPanel extends JPanel {
                 int menge  = Integer.parseInt(m);
 
                 // Domäne aufrufen
-                Artikel artikel = new Artikel(menge, nummer, t, preis);
+                Artikel artikel;
+                if (massengutCheckbox.isSelected()) {
+                    String pg = packungsgroesseField.getText().trim();
+                    if (pg.isEmpty()) {
+                        JOptionPane.showMessageDialog(this,
+                                "Bitte eine Packungsgröße angeben.",
+                                "Fehler", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    int packungsgroesse = Integer.parseInt(pg);
+                    if (menge % packungsgroesse != 0) {
+                        JOptionPane.showMessageDialog(this,
+                                "Menge muss ein Vielfaches der Packungsgröße sein!",
+                                "Fehler", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    artikel = new MassengutArtikel(menge, nummer, t, preis, packungsgroesse);
+                } else {
+                    artikel = new Artikel(menge, nummer, t, preis);
+                }
+
                 eshop.artikelEinfuegen(artikel, menge);
 
+
                 // UI zurücksetzen
-                titelField .setText("");
+                titelField.setText("");
                 nummerField.setText("");
-                preisField .setText("");
-                mengeField .setText("");
+                preisField.setText("");
+                mengeField.setText("");
+                massengutCheckbox.setSelected(false);
+                packungsgroesseField.setText("");
+                packungsgroesseField.setVisible(false);
 
                 // Tabelle aktualisieren
                 listener.onArtikelAdded(artikel);

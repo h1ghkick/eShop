@@ -131,9 +131,18 @@ public class EShop extends UnicastRemoteObject implements EShopRemote {
     public List<Artikel> getArtikelBestand() throws RemoteException {
         return artikelVW.getAlleArtikel();
     }
-    // hat jetzt eine prüfung-> wichti für exception
+    // hat jetzt eine prüfung-> wichtig für exception
     public void artikelHinzufuegen(Artikel artikel, int menge)
             throws RemoteException, MengeNichtVerfuegbar {
+        if (artikel instanceof MassengutArtikel) {
+            MassengutArtikel mArtikel = (MassengutArtikel) artikel;
+            //Menge ein Vielfaches der Packungsgröße?
+            if (menge % mArtikel.getPackungsgroesse() != 0) {
+                throw new VielFaches(
+                        "Die Menge muss ein Vielfaches der Packungsgröße (" + mArtikel.getPackungsgroesse() + ") sein.");
+            }
+        }
+
 
         // 1. Lager prüfen über ArtikelVW
         for (Artikel a : artikelVW.getAlleArtikel()) {

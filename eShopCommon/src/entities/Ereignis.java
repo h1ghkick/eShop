@@ -22,4 +22,21 @@ public class Ereignis implements Serializable {
         return tagImJahr + " | " + aktion + " | " + menge + " x " + artikel.getArtikelBezeichnung() + " | durch: " + benutzerEmail;
     }
 
+    public String getAktion() {
+        return aktion;
+    }
+
+    public int getMenge() {
+        return menge;
+    }
+
+    public int getTag() {
+        return tagImJahr;
+    }
+
+    public Artikel getArtikel() {
+        return artikel;
+    }
+
+
 }

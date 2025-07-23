@@ -14,14 +14,14 @@ public interface EShopRemote extends Remote {
     public boolean istRegistriert(String email) throws RemoteException;
     public User getAktuellerUser() throws RemoteException;
     public Rechnung Kaufen(Warenkorb warenkorb, String email) throws WarenkorbIstLeer, RemoteException;
-    public boolean artikelAuslagern(Artikel key, int menge, String email) throws RemoteException;
+    public boolean artikelAuslagern(Artikel key, int menge, String email) throws RemoteException, VielFaches;
     public Artikel artikelDa(String artikelBezeichnung) throws RemoteException;
     public List<Artikel> sucheArtikel(String artikelBezeichnung) throws RemoteException;
     public void einfuegenMitarbeiter(Mitarbeiter mitarbeiter) throws RemoteException;
     public void einfuegenKunden(Kunde kunde) throws RemoteException;
     public void artikelEinfuegen(Artikel artikel, int menge) throws RemoteException;
     public List<Artikel> getArtikelBestand() throws RemoteException;
-    public void artikelHinzufuegen(Artikel artikel, int menge) throws RemoteException, MengeNichtVerfuegbar;
+    public void artikelHinzufuegen(Artikel artikel, int menge) throws RemoteException, MengeNichtVerfuegbar, VielFaches;
     public Map<Artikel, Integer> listeAusgeben() throws RemoteException;
     public Warenkorb getWarenkorb() throws RemoteException;
     public void warenkorbLeeren() throws RemoteException;

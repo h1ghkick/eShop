@@ -2,8 +2,9 @@ package Server.domain;
 
 import Server.Persistence.FilePersistenceManager;
 import Server.Persistence.PersistenceManager;
-import entities.Artikel;
-import entities.Ereignis;
+import entities.*;
+import entities.MassengutArtikel;
+import exception.VielFaches;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -50,7 +51,13 @@ public class ArtikelVW {
 
     // Artikel ins Lager einfügen (neu oder Bestand erhöhen)
     public void artikelEinfuegen(Artikel artikel, int menge, String benutzerEmail){
-         for (Artikel a : artikelBestand) {
+        if (artikel instanceof MassengutArtikel) {
+            MassengutArtikel mArtikel = (MassengutArtikel) artikel;
+            if (menge % mArtikel.getPackungsgroesse() != 0) {
+                throw new VielFaches("Menge muss ein Vielfaches der Packungsgröße sein!");            }
+        }
+
+        for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
                 a.setArtikelAnzahl(a.getArtikelAnzahl() + menge); //menge erhöhen
                 logEreignis(a, menge, "Einlagerung", benutzerEmail);
@@ -68,6 +75,12 @@ public class ArtikelVW {
      * Gibt true zurück, wenn erfolgreich, false wenn nicht genug da.
      */
     public boolean artikelAuslagern(Artikel artikel, int menge, String benutzerEmail) {
+        if (artikel instanceof MassengutArtikel) {
+            MassengutArtikel mArtikel = (MassengutArtikel) artikel;
+            if (menge % mArtikel.getPackungsgroesse() != 0) {
+                throw new VielFaches("Menge muss ein Vielfaches der Packungsgröße sein!");            }
+        }
+
         for (Artikel a : artikelBestand) {
             if (a.equals(artikel)) {
                 if (a.getArtikelAnzahl() >= menge) {
@@ -109,7 +122,6 @@ public class ArtikelVW {
                 treffer.add(artikel);
             }
         }
-
         return treffer;
     }
 
