@@ -28,3 +28,8 @@ t
 Handschuhe
 3.0
 t
+300
+67889
+Marker
+2.0
+t

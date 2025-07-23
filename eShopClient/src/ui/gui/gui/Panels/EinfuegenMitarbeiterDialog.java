@@ -2,6 +2,7 @@ package ui.gui.gui.Panels;
 
 import entities.EShopRemote;
 import entities.Mitarbeiter;
+import exception.PasswortZuSchwach;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,25 +81,33 @@ public class EinfuegenMitarbeiterDialog extends JDialog {
                 return;
             }
 
-            Mitarbeiter mitarbeiter = new Mitarbeiter(firstName, lastName, email, password);
             try {
-                eshop.einfuegenMitarbeiter(mitarbeiter);
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
+                // Passwort-Prüfung wie beim Kunden
+                eshop.gueltigesPasswort(password);
 
-            try {
+                Mitarbeiter mitarbeiter = new Mitarbeiter(firstName, lastName, email, password);
+                eshop.einfuegenMitarbeiter(mitarbeiter);
+
                 eshop.speicherOption();
+
+                JOptionPane.showMessageDialog(this,
+                        "Mitarbeiter:in erfolgreich angelegt.",
+                        "Erfolg", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+
+            } catch (PasswortZuSchwach ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Ungültiges Passwort: " + ex.getMessage(),
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
+            } catch (RemoteException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Fehler bei der Verbindung:\n" + ex.getMessage(),
+                        "Fehler", JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,
                         "Fehler beim Speichern:\n" + ex.getMessage(),
                         "Fehler", JOptionPane.ERROR_MESSAGE);
             }
-
-            JOptionPane.showMessageDialog(this,
-                    "Mitarbeiter:in erfolgreich angelegt.",
-                    "Erfolg", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
         });
 
         cancelBtn.addActionListener(e -> dispose());
